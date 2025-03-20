@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Responsive Iframe</title>
+  <style>
+    /* Prevent page content from refreshing */
+    body, html {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      overflow: auto; /* Ensure smooth scrolling */
+	  overscroll-behavior: none;
+    }
+
+    /* Default iframe size for larger screens (desktop) */
+    iframe {
+      width: 100%;
+      height: 100vh; /* Full height of the viewport */
+      border: none;
+      display: block; /* Remove any unwanted spacing */
+    }
+
+    /* For mobile devices */
+    @media (max-width: 600px) {
+      iframe {
+        height: 100vh;  /* Adjust height for mobile */
+      }
+    }
+
+    /* For tablets */
+    @media (min-width: 601px) and (max-width: 1024px) {
+      iframe {
+        height: 100vh;  /* Adjust height for tablets */ jworldupload@gmail.com  123456
+		
+      }
+    }
+  </style>
+  <script>
+    function saveIframeScroll() {
+      let iframe = document.getElementById("myIframe");
+      sessionStorage.setItem("iframeScroll", iframe.contentWindow.scrollY);
+    }
+
+    function restoreIframeScroll() {
+      let iframe = document.getElementById("myIframe");
+      let savedScroll = sessionStorage.getItem("iframeScroll");
+      if (savedScroll) {
+        iframe.contentWindow.scrollTo(0, savedScroll);
+      }
+    }
+
+    window.addEventListener("load", restoreIframeScroll);
+    window.addEventListener("beforeunload", saveIframeScroll);
+	</script>
+</head>
+<body>
+
+  <!-- Iframe content -->
+  <iframe src="https://script.google.com/macros/s/AKfycbyYlc4WWmOQU3sgi6idhUGALzRwe1smtndnlL8MDehVaxSi1xJyci1Z9kT2rV5ZrjBI/exec"  id="myIframe" ></iframe>
+
+</body>
+</html>
