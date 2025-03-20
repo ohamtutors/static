@@ -15,7 +15,7 @@ jobs:
       - name: Set up JDK 17
         uses: actions/setup-java@v2
         with:
-          distribution: 'openjdk'  # Correct distribution for Java 17
+          distribution: 'temurin'  # Corrected to 'temurin' for Java 17
           java-version: '17'
 
       - name: Install Node.js
