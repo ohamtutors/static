@@ -31,10 +31,13 @@ jobs:
           cordova create MyApp com.example.myapp MyApp
           cd MyApp
           cordova platform add android
-rm -rf www/*
-rsync -av --exclude=www ../ www/
 
-  
+      - name: Remove existing files from www
+        run: rm -rf www/*
+
+      - name: Copy project files (excluding www)
+        run: rsync -av --exclude=www ../ www/
+
       - name: Build APK
         run: |
           cd MyApp
