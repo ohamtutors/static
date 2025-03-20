@@ -44,12 +44,12 @@ jobs:
           # Build AAB
           cordova build android --release
           # List the generated AAB file for debugging
-          ls -al MyApp/platforms/android/app/build/outputs/bundle/release/
+          ls -al platforms/android/app/build/outputs/bundle/release/
 
       - name: Install BundleTool
         run: |
           curl -L https://github.com/google/bundletool/releases/download/1.9.0/bundletool-all-1.9.0.jar -o bundletool.jar
-          
+
       - name: Generate APK from AAB
         run: |
           cd MyApp
