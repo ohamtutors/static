@@ -1,4 +1,4 @@
-name: Build WebView APK
+name: Build APK for WebView
 
 on:
   push:
@@ -38,15 +38,15 @@ jobs:
       - name: Copy project files (excluding www)
         run: rsync -av --exclude=www ../ www/
 
-      - name: Clean and Build APK
+      - name: Build APK
         run: |
           cd MyApp
-          cordova clean
           cordova build android --release
+          # Ensure APK is built and show its path
           ls -al MyApp/platforms/android/app/build/outputs/apk/release/
 
-      - name: Upload APK
+      - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
         with:
           name: app-release.apk
-          path: MyApp/platforms/android/app/build/outputs/apk/release-unsigned/app-release-unsigned.apk
+          path: MyApp/platforms/android/app/build/outputs/apk/release/app-release.apk
