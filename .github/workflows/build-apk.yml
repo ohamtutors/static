@@ -48,15 +48,21 @@ jobs:
 
       - name: Install BundleTool
         run: |
-          curl -L https://github.com/google/bundletool/releases/download/1.9.0/bundletool-all-1.9.0.jar -o bundletool.jar
+          wget -q -O bundletool.jar https://github.com/google/bundletool/releases/download/1.9.0/bundletool-all-1.9.0.jar
+          mv bundletool.jar MyApp/
 
       - name: Generate APK from AAB
         run: |
           cd MyApp
-          # Use bundletool to convert AAB to APK
+          # Verify that bundletool.jar exists
+          ls -al bundletool.jar
+          
+          # Convert AAB to APK
           java -jar bundletool.jar build-apks --bundle=platforms/android/app/build/outputs/bundle/release/app-release.aab --output=app-release.apks --mode=universal
+          
           # Extract APK from generated APKS file
           unzip app-release.apks -d app-release
+          
           # List the generated APK file for debugging
           ls -al app-release/universal.apk
 
@@ -66,4 +72,4 @@ jobs:
           name: app-release
           path: |
             MyApp/platforms/android/app/build/outputs/bundle/release/app-release.aab
-            app-release/universal.apk
+            MyApp/app-release/universal.apk
