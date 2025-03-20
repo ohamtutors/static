@@ -1,0 +1,46 @@
+name: Build WebView APK
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up JDK
+        uses: actions/setup-java@v2
+        with:
+          distribution: 'adopt'
+          java-version: '11'
+
+      - name: Install Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '16'
+
+      - name: Install Cordova
+        run: npm install -g cordova
+
+      - name: Create Cordova Project
+        run: |
+          cordova create MyApp com.example.myapp MyApp
+          cd MyApp
+          cordova platform add android
+          rm -rf www/*
+          cp -r ../* www/
+
+      - name: Build APK
+        run: |
+          cd MyApp
+          cordova build android --release
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v2
+        with:
+          name: app-release.apk
+          path: MyApp/platforms/android/app/build/outputs/apk/release/app-release.apk
