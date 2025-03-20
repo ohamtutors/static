@@ -1,4 +1,4 @@
-name: Build APK for WebView
+name: Build APK and AAB for WebView
 
 on:
   push:
@@ -38,16 +38,32 @@ jobs:
       - name: Copy project files (excluding www)
         run: rsync -av --exclude=www ../ www/
 
-      - name: Force APK Build
+      - name: Build AAB file
         run: |
           cd MyApp
-          # Force APK generation and disable AAB
-          cordova build android --release --no-aab -- --gradleArg=-PdisablePreDex
-          # List output folder to check APK path
-          ls -al MyApp/platforms/android/app/build/outputs/apk/release/
+          # Build AAB
+          cordova build android --release
+          # List the generated AAB file for debugging
+          ls -al MyApp/platforms/android/app/build/outputs/bundle/release/
 
-      - name: Upload APK Artifact
+      - name: Install BundleTool
+        run: |
+          curl -L https://github.com/google/bundletool/releases/download/1.9.0/bundletool-all-1.9.0.jar -o bundletool.jar
+          
+      - name: Generate APK from AAB
+        run: |
+          cd MyApp
+          # Use bundletool to convert AAB to APK
+          java -jar bundletool.jar build-apks --bundle=platforms/android/app/build/outputs/bundle/release/app-release.aab --output=app-release.apks --mode=universal
+          # Extract APK from generated APKS file
+          unzip app-release.apks -d app-release
+          # List the generated APK file for debugging
+          ls -al app-release/universal.apk
+
+      - name: Upload APK and AAB Artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: app-release.apk
-          path: MyApp/platforms/android/app/build/outputs/apk/release/app-release.apk
+          name: app-release
+          path: |
+            MyApp/platforms/android/app/build/outputs/bundle/release/app-release.aab
+            app-release/universal.apk
