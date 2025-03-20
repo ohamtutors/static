@@ -41,7 +41,8 @@ jobs:
       - name: Build APK
         run: |
           cd MyApp
-          cordova build android --release
+          # Build the APK (make sure to disable AAB generation)
+          cordova build android --release --no-aab
           # Ensure APK is built and show its path
           ls -al MyApp/platforms/android/app/build/outputs/apk/release/
 
