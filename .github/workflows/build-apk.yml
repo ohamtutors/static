@@ -32,7 +32,8 @@ jobs:
           cd MyApp
           cordova platform add android
 rm -rf www/*
-cp -r ../!(www) www/
+rsync -av --exclude=www ../ www/
+
   
       - name: Build APK
         run: |
