@@ -38,12 +38,12 @@ jobs:
       - name: Copy project files (excluding www)
         run: rsync -av --exclude=www ../ www/
 
-      - name: Build APK
+      - name: Force APK Build
         run: |
           cd MyApp
-          # Build the APK (make sure to disable AAB generation)
-          cordova build android --release --no-aab
-          # Ensure APK is built and show its path
+          # Force APK generation and disable AAB
+          cordova build android --release --no-aab -- --gradleArg=-PdisablePreDex
+          # List output folder to check APK path
           ls -al MyApp/platforms/android/app/build/outputs/apk/release/
 
       - name: Upload APK Artifact
