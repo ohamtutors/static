@@ -37,11 +37,13 @@ jobs:
           cd MyApp
           cordova platform add android
 
-      - name: Remove existing files from www
-        run: rm -rf www/*
-
-      - name: Copy project files (excluding www)
-        run: rsync -av --exclude=www ../ www/
+      - name: Copy Project Files to www
+        run: |
+          rm -rf MyApp/www/*
+          cp -r index.html MyApp/www/
+          cp -r assets MyApp/www/ || true  # Copy assets folder if exists
+          cp -r js MyApp/www/ || true      # Copy js folder if exists
+          cp -r css MyApp/www/ || true     # Copy css folder if exists
 
       - name: Generate Keystore for Signing
         run: |
@@ -50,13 +52,8 @@ jobs:
       - name: Build APK and AAB
         run: |
           cd MyApp
-          # Generate both APK and AAB
           cordova build android --release -- --packageType=apk
           cordova build android --release -- --packageType=bundle
-          
-          # List the generated files for debugging
-          ls -al platforms/android/app/build/outputs/apk/release/
-          ls -al platforms/android/app/build/outputs/bundle/release/
 
       - name: Sign APK File
         run: |
