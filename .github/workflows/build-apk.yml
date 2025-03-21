@@ -1,7 +1,12 @@
-name: Build APK and AAB for WebView
+name: Build and Sign Android APK with Updated index.html
 
 on:
   push:
+    paths:
+      - "index.html"
+      - "assets/**"
+      - "css/**"
+      - "js/**"
     branches:
       - main
 
@@ -18,18 +23,11 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Install Node.js
-        uses: actions/setup-node@v2
-        with:
-          node-version: '16'
-
-      - name: Install Cordova
-        run: npm install -g cordova
-
-      - name: Install Android SDK & Zipalign
+      - name: Install Dependencies (Node.js, Cordova, Android SDK)
         run: |
           sudo apt-get update
           sudo apt-get install -y android-sdk zipalign
+          npm install -g cordova
 
       - name: Create Cordova Project
         run: |
@@ -37,46 +35,20 @@ jobs:
           cd MyApp
           cordova platform add android
 
-      - name: Copy Project Files to www
+      - name: Copy Updated Files to Cordova `www/`
         run: |
           rm -rf MyApp/www/*
           cp -r index.html MyApp/www/
-          cp -r assets MyApp/www/ || true  # Copy assets folder if exists
-          cp -r js MyApp/www/ || true      # Copy js folder if exists
-          cp -r css MyApp/www/ || true     # Copy css folder if exists
+          cp -r assets MyApp/www/ || true
+          cp -r js MyApp/www/ || true
+          cp -r css MyApp/www/ || true
 
-      - name: Generate Keystore for Signing
+      - name: Generate Keystore for Signing (if not exists)
         run: |
-          keytool -genkey -v -keystore my-release-key.jks -keyalg RSA -keysize 2048 -validity 10000 -alias my-key-alias -storepass mypassword -keypass mypassword -dname "CN=MyApp, OU=MyOrg, O=MyCompany, L=City, S=State, C=US"
+          if [ ! -f my-release-key.jks ]; then
+            keytool -genkey -v -keystore my-release-key.jks -keyalg RSA -keysize 2048 -validity 10000 -alias my-key-alias -storepass mypassword -keypass mypassword -dname "CN=MyApp, OU=MyOrg, O=MyCompany, L=City, S=State, C=US"
+          fi
 
       - name: Build APK and AAB
         run: |
-          cd MyApp
-          cordova build android --release -- --packageType=apk
-          cordova build android --release -- --packageType=bundle
-
-      - name: Sign APK File
-        run: |
-          jarsigner -verbose -sigalg SHA256withRSA -digestalg SHA-256 \
-          -keystore my-release-key.jks -storepass mypassword -keypass mypassword \
-          MyApp/platforms/android/app/build/outputs/apk/release/app-release-unsigned.apk my-key-alias
-
-      - name: Align APK for Installation
-        run: |
-          zipalign -v 4 \
-          MyApp/platforms/android/app/build/outputs/apk/release/app-release-unsigned.apk \
-          MyApp/platforms/android/app/build/outputs/apk/release/app-release.apk
-
-      - name: Sign AAB File
-        run: |
-          jarsigner -verbose -sigalg SHA256withRSA -digestalg SHA-256 \
-          -keystore my-release-key.jks -storepass mypassword -keypass mypassword \
-          MyApp/platforms/android/app/build/outputs/bundle/release/app-release.aab my-key-alias
-
-      - name: Upload APK and AAB Artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: app-release
-          path: |
-            MyApp/platforms/android/app/build/outputs/apk/release/app-release.apk
-            MyApp/platforms/android/app/build/outputs/bundle/release/app-release.aab
+          cd My
