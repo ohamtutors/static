@@ -42,19 +42,16 @@ jobs:
         run: |
           keytool -genkey -v -keystore my-release-key.jks -keyalg RSA -keysize 2048 -validity 10000 -alias my-key-alias -storepass mypassword -keypass mypassword -dname "CN=MyApp, OU=MyOrg, O=MyCompany, L=City, S=State, C=US"
 
-      - name: Build AAB and APK
+      - name: Build APK and AAB
         run: |
           cd MyApp
-          # Force APK generation along with AAB
+          # Generate both APK and AAB
           cordova build android --release -- --packageType=apk
-          ls -al platforms/android/app/build/outputs/bundle/release/
+          cordova build android --release -- --packageType=bundle
+          
+          # List the generated files for debugging
           ls -al platforms/android/app/build/outputs/apk/release/
-
-      - name: Sign AAB File
-        run: |
-          jarsigner -verbose -sigalg SHA256withRSA -digestalg SHA-256 \
-          -keystore my-release-key.jks -storepass mypassword -keypass mypassword \
-          MyApp/platforms/android/app/build/outputs/bundle/release/app-release.aab my-key-alias
+          ls -al platforms/android/app/build/outputs/bundle/release/
 
       - name: Sign APK File
         run: |
@@ -68,10 +65,16 @@ jobs:
           MyApp/platforms/android/app/build/outputs/apk/release/app-release-unsigned.apk \
           MyApp/platforms/android/app/build/outputs/apk/release/app-release.apk
 
+      - name: Sign AAB File
+        run: |
+          jarsigner -verbose -sigalg SHA256withRSA -digestalg SHA-256 \
+          -keystore my-release-key.jks -storepass mypassword -keypass mypassword \
+          MyApp/platforms/android/app/build/outputs/bundle/release/app-release.aab my-key-alias
+
       - name: Upload APK and AAB Artifacts
         uses: actions/upload-artifact@v4
         with:
           name: app-release
           path: |
-            MyApp/platforms/android/app/build/outputs/bundle/release/app-release.aab
             MyApp/platforms/android/app/build/outputs/apk/release/app-release.apk
+            MyApp/platforms/android/app/build/outputs/bundle/release/app-release.aab
