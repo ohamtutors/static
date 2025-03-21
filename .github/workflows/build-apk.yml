@@ -29,11 +29,22 @@ jobs:
           sudo apt-get install -y android-sdk zipalign
           npm install -g cordova
 
-      - name: Create Cordova Project
+      - name: Check if `MyApp` Directory Exists
         run: |
-          cordova create MyApp com.example.myapp MyApp
-          cd MyApp
-          cordova platform add android
+          if [ ! -d "MyApp" ]; then
+            echo "Creating Cordova Project..."
+            cordova create MyApp com.example.myapp MyApp
+          fi
+
+      - name: Navigate to `MyApp` and Add Android Platform
+        run: |
+          if [ -d "MyApp" ]; then
+            cd MyApp
+            cordova platform add android || true
+          else
+            echo "Error: MyApp directory does not exist!"
+            exit 1
+          fi
 
       - name: Copy Updated Files to Cordova `www/`
         run: |
@@ -51,4 +62,34 @@ jobs:
 
       - name: Build APK and AAB
         run: |
-          cd My
+          cd MyApp
+          cordova build android --release -- --packageType=apk
+          cordova build android --release -- --packageType=bundle
+
+      - name: Sign APK File
+        run: |
+          jarsigner -verbose -sigalg SHA256withRSA -digestalg SHA-256 \
+          -keystore my-release-key.jks -storepass mypassword -keypass mypassword \
+          MyApp/platforms/android/app/build/outputs/apk/release/app-release-unsigned.apk my-key-alias
+
+      - name: Align APK for Installation
+        run: |
+          zipalign -v 4 \
+          MyApp/platforms/android/app/build/outputs/apk/release/app-release-unsigned.apk \
+          MyApp/platforms/android/app/build/outputs/apk/release/app-release.apk
+
+      - name: Download BundleTool and Convert AAB to APK
+        run: |
+          wget -q -O bundletool.jar https://github.com/google/bundletool/releases/download/1.15.6/bundletool-all-1.15.6.jar
+          mv bundletool.jar MyApp/
+          cd MyApp
+          java -jar bundletool.jar build-apks --bundle=platforms/android/app/build/outputs/bundle/release/app-release.aab --output=app-release.apks --mode=universal
+          unzip app-release.apks -d app-release
+
+      - name: Upload APK and AAB Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-release
+          path: |
+            MyApp/platforms/android/app/build/outputs/apk/release/app-release.apk
+            MyApp/platforms/android/app/build/outputs/bundle/release/app-release.aab
