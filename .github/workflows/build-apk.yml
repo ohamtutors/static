@@ -38,13 +38,34 @@ jobs:
       - name: Copy project files (excluding www)
         run: rsync -av --exclude=www ../ www/
 
-      - name: Build AAB file
+      - name: Generate Keystore for Signing
+        run: |
+          keytool -genkey -v -keystore my-release-key.jks -keyalg RSA -keysize 2048 -validity 10000 -alias my-key-alias -storepass mypassword -keypass mypassword -dname "CN=MyApp, OU=MyOrg, O=MyCompany, L=City, S=State, C=US"
+
+      - name: Build AAB and Unsigned APK
         run: |
           cd MyApp
-          # Build AAB
           cordova build android --release
-          # List the generated AAB file for debugging
           ls -al platforms/android/app/build/outputs/bundle/release/
+          ls -al platforms/android/app/build/outputs/apk/release/
+
+      - name: Sign AAB File
+        run: |
+          jarsigner -verbose -sigalg SHA256withRSA -digestalg SHA-256 \
+          -keystore my-release-key.jks -storepass mypassword -keypass mypassword \
+          MyApp/platforms/android/app/build/outputs/bundle/release/app-release.aab my-key-alias
+
+      - name: Sign APK File
+        run: |
+          jarsigner -verbose -sigalg SHA256withRSA -digestalg SHA-256 \
+          -keystore my-release-key.jks -storepass mypassword -keypass mypassword \
+          MyApp/platforms/android/app/build/outputs/apk/release/app-release-unsigned.apk my-key-alias
+
+      - name: Align APK for Installation
+        run: |
+          zipalign -v 4 \
+          MyApp/platforms/android/app/build/outputs/apk/release/app-release-unsigned.apk \
+          MyApp/platforms/android/app/build/outputs/apk/release/app-release.apk
 
       - name: Install BundleTool
         run: |
@@ -54,16 +75,8 @@ jobs:
       - name: Generate APK from AAB
         run: |
           cd MyApp
-          # Verify that bundletool.jar exists
-          ls -al bundletool.jar
-          
-          # Convert AAB to APK
           java -jar bundletool.jar build-apks --bundle=platforms/android/app/build/outputs/bundle/release/app-release.aab --output=app-release.apks --mode=universal
-          
-          # Extract APK from generated APKS file
           unzip app-release.apks -d app-release
-          
-          # List the generated APK file for debugging
           ls -al app-release/universal.apk
 
       - name: Upload APK and AAB Artifacts
@@ -72,4 +85,5 @@ jobs:
           name: app-release
           path: |
             MyApp/platforms/android/app/build/outputs/bundle/release/app-release.aab
+            MyApp/platforms/android/app/build/outputs/apk/release/app-release.apk
             MyApp/app-release/universal.apk
