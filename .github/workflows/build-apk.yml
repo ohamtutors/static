@@ -26,6 +26,11 @@ jobs:
       - name: Install Cordova
         run: npm install -g cordova
 
+      - name: Install Android SDK & Zipalign
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y android-sdk zipalign
+
       - name: Create Cordova Project
         run: |
           cordova create MyApp com.example.myapp MyApp
