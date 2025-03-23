@@ -32,11 +32,10 @@
     /* For tablets */
     @media (min-width: 601px) and (max-width: 1024px) {
       iframe {
-        height: 100vh;  /* Adjust height for tablets */ 
+        height: 100vh;  /* Adjust height for tablets */ jworldupload@gmail.com  123456
 		
       }
     }
-	 
   </style>
   <script>
     function saveIframeScroll() {
@@ -54,51 +53,39 @@
 
     window.addEventListener("load", restoreIframeScroll);
     window.addEventListener("beforeunload", saveIframeScroll);
+	
+   // Listen for messages from iframe
+        window.addEventListener("message", function(event) {
+            if (event.data.pdfLink) {
+                console.log("Received PDF Link:", event.data.pdfLink);
 
-	   document.addEventListener('deviceready', function () {
-    var permissions = cordova.plugins.permissions;
-    
-    permissions.requestPermission(permissions.WRITE_EXTERNAL_STORAGE, function(status) {
-        if (status.hasPermission) {
-            console.log("Storage permission granted!");
-        } else {
-            console.log("Storage permission denied!");
-        }
-    });
+                const container = document.getElementById("downloadLinkContainer");
+                container.innerHTML = ""; // Clear previous links
+                
+                // Create a new download link
+                const downloadLink = document.createElement("a");
+                downloadLink.href = event.data.pdfLink;
+                downloadLink.download = "Receipt.pdf";
+                downloadLink.textContent = "Download Receipt";
+                downloadLink.target = "_blank"; // Ensure it opens in a new tab
 
-    // Handle file download
-    document.querySelectorAll("a").forEach(link => {
-        link.addEventListener("click", function (e) {
-            var url = this.href;
-            e.preventDefault();
-            
-            var fileTransfer = new FileTransfer();
-            var uri = encodeURI(url);
-            var fileURL = cordova.file.externalRootDirectory + "Download/" + url.split('/').pop();
-            
-            fileTransfer.download(uri, fileURL, function (entry) {
-                console.log("Download complete: " + entry.toURL());
-                alert("File downloaded successfully!");
-            }, function (error) {
-                console.log("Download error: " + error.source);
-                alert("Failed to download file.");
-            }, false);
-        });
-    });
-}, false);
-window.addEventListener("message", function(event) {
-    if (event.data.link) {
-        window.location.href = event.data.link; // Open link in parent
-    }
-});
+                // Append link to the page
+                container.appendChild(downloadLink);
 
-	  
+                // Force auto-download in WebView (Android APK)
+                setTimeout(() => {
+                    const clickEvent = new MouseEvent("click", { bubbles: true, cancelable: true, view: window });
+                    downloadLink.dispatchEvent(clickEvent);
+                }, 500);
+            }
+        }, false);
+
 	</script>
 </head>
 <body>
-
+    <div id="downloadLinkContainer"></div>
   <!-- Iframe content -->
-  <iframe src="https://script.google.com/macros/s/AKfycbzg-FzTZUby6betkI_WQbvfjvn4aD6hTXoUFX2HDMpoj_qCRNjrw66_rPnahdB9FgEI/exec"  id="myIframe" ></iframe>
+  <iframe src="https://script.google.com/macros/s/AKfycbwnLRxkWrbzR2V-Fjwx2XE6NBefKGf2SL_aomhtdnlxLekC35wrI6vEIPcao0J5ZGJn/exec"  id="myIframe" ></iframe>
 
 </body>
 </html>
