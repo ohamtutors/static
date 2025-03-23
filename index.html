@@ -86,13 +86,19 @@
         });
     });
 }, false);
+window.addEventListener("message", function(event) {
+    if (event.data.link) {
+        window.location.href = event.data.link; // Open link in parent
+    }
+});
 
+	  
 	</script>
 </head>
 <body>
 
   <!-- Iframe content -->
-  <iframe src="https://script.google.com/macros/s/AKfycbzNOjgNxRacXKzsVJvySzRVBnFcSdiAksZcVEOoPlEPKm5yViTGTLZ8XmhfJ6X_2vs9/exec"  id="myIframe" ></iframe>
+  <iframe src="https://script.google.com/macros/s/AKfycbzg-FzTZUby6betkI_WQbvfjvn4aD6hTXoUFX2HDMpoj_qCRNjrw66_rPnahdB9FgEI/exec"  id="myIframe" ></iframe>
 
 </body>
 </html>
