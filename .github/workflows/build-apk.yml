@@ -1,4 +1,5 @@
 name: Build and Sign Android APK with Updated index.html
+
 on:
   push:
     paths:
@@ -9,10 +10,10 @@ on:
     branches:
       - main
 
-
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
@@ -46,13 +47,13 @@ jobs:
             exit 1
           fi
 
-      - name: Copy Updated Files to Cordova `www/`
+      - name: Install Cordova Plugins (File, File-Transfer, Permissions)
         run: |
-          rm -rf MyApp/www/*
-          cp -r index.html MyApp/www/
-          cp -r assets MyApp/www/ || true
-          cp -r js MyApp/www/ || true
-          cp -r css MyApp/www/ || true
+          cd MyApp
+          cordova plugin add cordova-plugin-file
+          cordova plugin add cordova-plugin-file-transfer
+          cordova plugin add cordova-plugin-android-permissions
+          cordova plugin add cordova-plugin-inappbrowser
 
       - name: Modify `AndroidManifest.xml` to Grant File Permissions
         run: |
@@ -60,6 +61,23 @@ jobs:
           sed -i '/<uses-permission android:name="android.permission.INTERNET" \/>/a \
           <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" /> \
           <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />' AndroidManifest.xml
+
+      - name: Modify `config.xml` for WebView File Access
+        run: |
+          cd MyApp
+          sed -i '/<platform name="android">/a \
+          <preference name="AndroidPersistentFileLocation" value="Internal"/> \
+          <preference name="AllowInlineMediaPlayback" value="true"/> \
+          <preference name="AndroidInsecureFileModeEnabled" value="true"/> \
+          <allow-navigation href="*" />' config.xml
+
+      - name: Copy Updated Files to Cordova `www/`
+        run: |
+          rm -rf MyApp/www/*
+          cp -r index.html MyApp/www/
+          cp -r assets MyApp/www/ || true
+          cp -r js MyApp/www/ || true
+          cp -r css MyApp/www/ || true
 
       - name: Generate Keystore for Signing (if not exists)
         run: |
