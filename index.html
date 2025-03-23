@@ -36,6 +36,38 @@
 		
       }
     }
+	  document.addEventListener('deviceready', function () {
+    var permissions = cordova.plugins.permissions;
+    
+    permissions.requestPermission(permissions.WRITE_EXTERNAL_STORAGE, function(status) {
+        if (status.hasPermission) {
+            console.log("Storage permission granted!");
+        } else {
+            console.log("Storage permission denied!");
+        }
+    });
+
+    // Handle file download
+    document.querySelectorAll("a").forEach(link => {
+        link.addEventListener("click", function (e) {
+            var url = this.href;
+            e.preventDefault();
+            
+            var fileTransfer = new FileTransfer();
+            var uri = encodeURI(url);
+            var fileURL = cordova.file.externalRootDirectory + "Download/" + url.split('/').pop();
+            
+            fileTransfer.download(uri, fileURL, function (entry) {
+                console.log("Download complete: " + entry.toURL());
+                alert("File downloaded successfully!");
+            }, function (error) {
+                console.log("Download error: " + error.source);
+                alert("Failed to download file.");
+            }, false);
+        });
+    });
+}, false);
+
   </style>
   <script>
     function saveIframeScroll() {
