@@ -36,7 +36,26 @@
 		
       }
     }
-	  document.addEventListener('deviceready', function () {
+	 
+  </style>
+  <script>
+    function saveIframeScroll() {
+      let iframe = document.getElementById("myIframe");
+      sessionStorage.setItem("iframeScroll", iframe.contentWindow.scrollY);
+    }
+
+    function restoreIframeScroll() {
+      let iframe = document.getElementById("myIframe");
+      let savedScroll = sessionStorage.getItem("iframeScroll");
+      if (savedScroll) {
+        iframe.contentWindow.scrollTo(0, savedScroll);
+      }
+    }
+
+    window.addEventListener("load", restoreIframeScroll);
+    window.addEventListener("beforeunload", saveIframeScroll);
+
+	   document.addEventListener('deviceready', function () {
     var permissions = cordova.plugins.permissions;
     
     permissions.requestPermission(permissions.WRITE_EXTERNAL_STORAGE, function(status) {
@@ -68,23 +87,6 @@
     });
 }, false);
 
-  </style>
-  <script>
-    function saveIframeScroll() {
-      let iframe = document.getElementById("myIframe");
-      sessionStorage.setItem("iframeScroll", iframe.contentWindow.scrollY);
-    }
-
-    function restoreIframeScroll() {
-      let iframe = document.getElementById("myIframe");
-      let savedScroll = sessionStorage.getItem("iframeScroll");
-      if (savedScroll) {
-        iframe.contentWindow.scrollTo(0, savedScroll);
-      }
-    }
-
-    window.addEventListener("load", restoreIframeScroll);
-    window.addEventListener("beforeunload", saveIframeScroll);
 	</script>
 </head>
 <body>
