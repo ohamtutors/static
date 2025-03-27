@@ -1,155 +1,91 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Mobile-Optimized Iframe</title>
-    <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-        html, body {
-            height: 100%;
-            width: 100%;
-            overflow: hidden;
-            overscroll-behavior: none;
-            touch-action: manipulation;
-        }
-        #container {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-        }
-        #downloadLinkContainer {
-            width: 100%;
-            padding: 10px;
-            background-color: #f0f0f0;
-            text-align: center;
-        }
-        #downloadLink {
-            display: inline-block;
-            background-color: #007bff;
-            color: white;
-            padding: 10px 20px;
-            text-decoration: none;
-            border-radius: 5px;
-            margin: 5px;
-        }
-        iframe {
-            flex-grow: 1;
-            width: 100%;
-            border: none;
-            margin: 0;
-        }
-        
-        body {
-            -webkit-text-size-adjust: 100%;
-        }
-        
-        iframe {
-            will-change: scroll-position;
-            transform: translateZ(0);
-        }
-    </style>
-</head>
-<body>
-    <div id="container">
-        <div id="downloadLinkContainer"></div>
-        <iframe 
-            id="myIframe" 
-            src="https://script.google.com/macros/s/AKfycbxSbM5_4iZFF0tu5v17TL7M6tA6quLmxGAikR9PRhmPLGghmD3fTIB3qRLyMTXWMYhK/exec" 
-            sandbox="allow-scripts allow-same-origin allow-forms"
-            allowfullscreen 
-            webkitallowfullscreen 
-            mozallowfullscreen
-        ></iframe>
-    </div>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Responsive Iframe</title>
+  <style>
+    /* Prevent page content from refreshing */
+    body, html {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      overflow: auto; /* Ensure smooth scrolling */
+	  overscroll-behavior: none;
+    }
 
-    <script>
-        const iframe = document.getElementById('myIframe');
-        const downloadContainer = document.getElementById('downloadLinkContainer');
+    /* Default iframe size for larger screens (desktop) */
+    iframe {
+      width: 100%;
+      height: 100vh; /* Full height of the viewport */
+      border: none;
+      display: block; /* Remove any unwanted spacing */
+    }
 
-        // Cross-window communication for scroll position
-        function saveIframeScroll(scrollPosition) {
-            try {
-                localStorage.setItem('iframeScrollPosition', scrollPosition);
-            } catch (error) {
-                console.warn('Could not save scroll position:', error);
-            }
-        }
+    /* For mobile devices */
+    @media (max-width: 600px) {
+      iframe {
+        height: 100vh;  /* Adjust height for mobile */
+      }
+    }
 
-        function restoreIframeScroll() {
-            try {
-                const savedScroll = localStorage.getItem('iframeScrollPosition');
-                if (savedScroll) {
-                    // Send message to iframe to scroll
-                    iframe.contentWindow.postMessage({
-                        type: 'restoreScroll',
-                        position: parseInt(savedScroll, 10)
-                    }, '*');
-                }
-            } catch (error) {
-                console.warn('Could not restore scroll position:', error);
-            }
-        }
+    /* For tablets */
+    @media (min-width: 601px) and (max-width: 1024px) {
+      iframe {
+        height: 100vh;  /* Adjust height for tablets */ 
+		
+      }
+    }
+  </style>
+  <script>
+    function saveIframeScroll() {
+      let iframe = document.getElementById("myIframe");
+      sessionStorage.setItem("iframeScroll", iframe.contentWindow.scrollY);
+    }
 
-        // Message listener for scroll and PDF link
-        window.addEventListener('message', function(event) {
-            // Handle scroll saving from iframe
-            if (event.data && event.data.type === 'saveScroll') {
-                saveIframeScroll(event.data.position);
-            }
-            
-            // Handle PDF link download
-            if (event.data && event.data.pdfLink) {
-                console.log('Received PDF Link:', event.data.pdfLink);
+    function restoreIframeScroll() {
+      let iframe = document.getElementById("myIframe");
+      let savedScroll = sessionStorage.getItem("iframeScroll");
+      if (savedScroll) {
+        iframe.contentWindow.scrollTo(0, savedScroll);
+      }
+    }
+
+    window.addEventListener("load", restoreIframeScroll);
+    window.addEventListener("beforeunload", saveIframeScroll);
+	
+   // Listen for messages from iframe
+        window.addEventListener("message", function(event) {
+            if (event.data.pdfLink) {
+                console.log("Received PDF Link:", event.data.pdfLink);
+
+                const container = document.getElementById("downloadLinkContainer");
+                container.innerHTML = ""; // Clear previous links
                 
-                // Clear previous links
-                downloadContainer.innerHTML = '';
-                
-                // Create download link
-                const downloadLink = document.createElement('a');
+                // Create a new download link
+                const downloadLink = document.createElement("a");
                 downloadLink.href = event.data.pdfLink;
-                downloadLink.id = 'downloadLink';
-                downloadLink.download = 'Receipt.pdf';
-                downloadLink.textContent = 'Download Receipt';
-                downloadLink.target = '_blank';
-                
-                // Append link to container
-                downloadContainer.appendChild(downloadLink);
-                
-                // Enhanced download handling
-                function triggerDownload() {
-                    try {
-                        const clickEvent = new MouseEvent('click', { 
-                            bubbles: true, 
-                            cancelable: true, 
-                            view: window 
-                        });
-                        downloadLink.dispatchEvent(clickEvent);
-                    } catch (error) {
-                        console.warn('Download trigger failed:', error);
-                    }
-                }
-                
-                // Delayed download trigger for WebView compatibility
-                setTimeout(triggerDownload, 500);
+                downloadLink.download = "Receipt.pdf";
+                downloadLink.textContent = "Download Receipt";
+                downloadLink.target = "_blank"; // Ensure it opens in a new tab
+
+                // Append link to the page
+                container.appendChild(downloadLink);
+
+                // Force auto-download in WebView (Android APK)
+                setTimeout(() => {
+                    const clickEvent = new MouseEvent("click", { bubbles: true, cancelable: true, view: window });
+                    downloadLink.dispatchEvent(clickEvent);
+                }, 500);
             }
         }, false);
 
-        // Restore scroll on load
-        window.addEventListener('load', restoreIframeScroll);
+	</script>
+</head>
+<body>
+    <div id="downloadLinkContainer"></div>
+  <!-- Iframe content -->
+  <iframe src="https://script.google.com/macros/s/AKfycbzhZRf0yZhZU6sdhc7SfuZVFl2RDe9gzRFY0V-nfb9C2KZMfVs2rYlFEKpFfNFHfurG/exec"  id="myIframe" ></iframe>
 
-        // Prevent overscroll and improve mobile experience
-        document.addEventListener('touchmove', function(e) {
-            e.preventDefault();
-        }, { passive: false });
-    </script>
 </body>
 </html>
