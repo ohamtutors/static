@@ -38,6 +38,22 @@
     }
   </style>
   <script>
+	  document.addEventListener('deviceready', function () {
+    document.addEventListener('backbutton', function (e) {
+        e.preventDefault(); // Prevent default behavior (exit app)
+        navigator.notification.confirm(
+            "Do you want to exit the app?", // Message
+            function (buttonIndex) {
+                if (buttonIndex === 1) {
+                    navigator.app.exitApp(); // Exit the app
+                }
+            },
+            "Exit App", // Title
+            ["Yes", "No"] // Button labels
+        );
+    }, false);
+}, false);
+
     function saveIframeScroll() {
       let iframe = document.getElementById("myIframe");
       sessionStorage.setItem("iframeScroll", iframe.contentWindow.scrollY);
@@ -85,7 +101,7 @@
 <body>
     <div id="downloadLinkContainer"></div>
   <!-- Iframe content -->
-  <iframe src="https://script.google.com/macros/s/AKfycbw_egEDi3iCMbfUuHUt5UDHZ_soMHlqKmfyHAbyfbr2A6grClwGz3y1I5r1UJBWh3UV/exec"  id="myIframe" ></iframe>
+  <iframe src="https://script.google.com/macros/s/AKfycby9EPhfddcv3r1MslgmelqOcaBIIiJjBo14QseysNzGxgGUkicOnHNWFIHg50ME5ro/exec"  id="myIframe" ></iframe>
 
 </body>
 </html>
