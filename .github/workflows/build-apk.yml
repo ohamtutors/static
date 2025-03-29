@@ -89,13 +89,6 @@ jobs:
           <preference name="SplashScreen" value="screen"/> \
           <preference name="SplashScreenDelay" value="3000"/> \
           <preference name="AutoHideSplashScreen" value="true"/> \
-          <platform name="android"> \
-          <splash src="res/screen/android/drawable-port-mdpi-screen.png" density="mdpi"/> \
-          <splash src="res/screen/android/drawable-port-hdpi-screen.png" density="hdpi"/> \
-          <splash src="res/screen/android/drawable-port-xhdpi-screen.png" density="xhdpi"/> \
-          <splash src="res/screen/android/drawable-port-xxhdpi-screen.png" density="xxhdpi"/> \
-          <splash src="res/screen/android/drawable-port-xxxhdpi-screen.png" density="xxxhdpi"/> \
-          </platform> \
           <plugin name="cordova-plugin-dialogs" source="npm" /> \
           <allow-navigation href="*" />' config.xml
 
