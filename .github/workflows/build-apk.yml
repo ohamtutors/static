@@ -7,6 +7,8 @@ on:
       - "assets/**"
       - "css/**"
       - "js/**"
+      - "res/screen/android/**"
+      - "res/icon/android/**"
     branches:
       - main
 
@@ -58,10 +60,6 @@ jobs:
             exit 1
           fi
           
-      - name: Remove Existing Cordova Splash Screen Plugin (if any)
-        run: |
-          cd MentorNook
-          cordova plugin rm cordova-plugin-splashscreen || true
 
       - name: Install Cordova Plugins
         run: |
@@ -71,6 +69,7 @@ jobs:
           cordova plugin add cordova-plugin-android-permissions
           cordova plugin add cordova-plugin-inappbrowser
           cordova plugin add cordova-plugin-dialogs
+          cordova plugin rm cordova-plugin-splashscreen || true
           cordova plugin add cordova-plugin-splashscreen
 
       - name: Modify `AndroidManifest.xml` to Grant File Permissions
@@ -88,8 +87,15 @@ jobs:
           <preference name="AllowInlineMediaPlayback" value="true"/> \
           <preference name="AndroidInsecureFileModeEnabled" value="true"/> \
           <preference name="SplashScreen" value="screen"/> \
-          <preference name="SplashMaintainAspectRatio" value="true"/> \
           <preference name="SplashScreenDelay" value="3000"/> \
+          <preference name="AutoHideSplashScreen" value="true"/> \
+          <platform name="android"> \
+          <splash src="res/screen/android/drawable-port-mdpi-screen.png" density="mdpi"/> \
+          <splash src="res/screen/android/drawable-port-hdpi-screen.png" density="hdpi"/> \
+          <splash src="res/screen/android/drawable-port-xhdpi-screen.png" density="xhdpi"/> \
+          <splash src="res/screen/android/drawable-port-xxhdpi-screen.png" density="xxhdpi"/> \
+          <splash src="res/screen/android/drawable-port-xxxhdpi-screen.png" density="xxxhdpi"/> \
+          </platform> \
           <plugin name="cordova-plugin-dialogs" source="npm" /> \
           <allow-navigation href="*" />' config.xml
 
@@ -113,7 +119,18 @@ jobs:
         run: |
           mkdir -p MentorNook/res/icon/android/
           cp -r res/icon/android/* MentorNook/res/icon/android/
-          
+      
+      - name: Copy Splash Screen Assets to `res/screen/android`
+        run: |
+          mkdir -p MentorNook/res/screen/android/
+          cp -r res/screen/android/* MentorNook/res/screen/android/ || true
+
+      - name: Remove and Re-add Android Platform (Fix Splash Issues)
+        run: |
+          cd MentorNook
+          cordova platform rm android || true
+          cordova platform add android
+    
       - name: Generate Keystore for Signing (if not exists)
         run: |
           if [ ! -f my-release-key.jks ]; then
