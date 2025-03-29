@@ -17,17 +17,7 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
-        
-      
-      - name: Move MentorNook Project to Repository
-        run: |
-          # Ensure the Mentor-Nook directory exists locally before moving it
-          if [ ! -d "MentorNook" ]; then
-            echo "Moving MentorNook directory into the repository..."
-            # Replace this with your correct path if needed, assuming it's outside of the repository
-            mv /path/to/MentorNook ./MentorNook
-          fi
-  
+
       - name: Set up JDK 17
         uses: actions/setup-java@v2
         with:
@@ -47,17 +37,23 @@ jobs:
             cordova create MentorNook com.example.MentorNook MentorNook
           fi
 
+      - name: Debug: List Repository Files
+        run: ls -R
+
+      - name: Ensure `MentorNook` is Tracked in Git
+        run: |
+          git config --global user.email "your-email@example.com"
+          git config --global user.name "GitHub Actions"
+          git add MentorNook || true
+          git commit -m "Added MentorNook folder from CI/CD pipeline" || true
+          git push origin main || true
+
       - name: Navigate to `MentorNook` and Add Android Platform
         run: |
-          if [ -d "MentorNook" ]; then
-            cd MentorNook
-            cordova platform add android || true
-          else
-            echo "Error: MentorNook directory does not exist!"
-            exit 1
-          fi
+          cd MentorNook
+          cordova platform add android || true
 
-      - name: Install Cordova Plugins (File, File-Transfer, Permissions)
+      - name: Install Cordova Plugins
         run: |
           cd MentorNook
           cordova plugin add cordova-plugin-file
@@ -82,13 +78,6 @@ jobs:
           <preference name="AndroidInsecureFileModeEnabled" value="true"/> \
           <plugin name="cordova-plugin-dialogs" source="npm" /> \
           <allow-navigation href="*" />' config.xml
-          
-          - name: Copy Updated Icon Files
-            run: |
-                rm -rf MentorNook/res/icon/android/
-                mkdir -p MentorNook/res/icon/android/
-                cp -r res/icon/android/* MentorNook/res/icon/android/
-
 
       - name: Copy Updated Files to Cordova `www/`
         run: |
@@ -97,7 +86,6 @@ jobs:
           cp -r assets MentorNook/www/ || true
           cp -r js MentorNook/www/ || true
           cp -r css MentorNook/www/ || true
-     
 
       - name: Generate Keystore for Signing (if not exists)
         run: |
@@ -122,14 +110,6 @@ jobs:
           zipalign -v 4 \
           MentorNook/platforms/android/app/build/outputs/apk/release/app-release-unsigned.apk \
           MentorNook/platforms/android/app/build/outputs/apk/release/app-release.apk
-
-      - name: Download BundleTool and Convert AAB to APK
-        run: |
-          wget -q -O bundletool.jar https://github.com/google/bundletool/releases/download/1.15.6/bundletool-all-1.15.6.jar
-          mv bundletool.jar MentorNook/
-          cd MentorNook
-          java -jar bundletool.jar build-apks --bundle=platforms/android/app/build/outputs/bundle/release/app-release.aab --output=app-release.apks --mode=universal
-          unzip app-release.apks -d app-release
 
       - name: Upload APK and AAB Artifacts
         uses: actions/upload-artifact@v4
