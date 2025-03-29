@@ -27,3 +27,10 @@ function onDeviceReady() {
     console.log('Running cordova-' + cordova.platformId + '@' + cordova.version);
     document.getElementById('deviceready').classList.add('ready');
 }
+
+document.addEventListener('deviceready', function () {
+    // Hide splash screen explicitly after app is fully loaded
+    setTimeout(function () {
+        navigator.splashscreen.hide();
+    }, 500); // Reduce delay time to avoid black screen
+}, false);
