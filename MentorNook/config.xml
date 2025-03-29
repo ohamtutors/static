@@ -14,12 +14,11 @@
     <icon src="res/icon/android/drawable-xhdpi-icon.png" density="xhdpi"/>
     <icon src="res/icon/android/drawable-xxhdpi-icon.png" density="xxhdpi"/>
     <icon src="res/icon/android/drawable-xxxhdpi-icon.png" density="xxxhdpi"/>
-    
-    <splash src="res/screen/android/drawable-port-mdpi-screen.png" density="mdpi"/>
-    <splash src="res/screen/android/drawable-port-hdpi-screen.png" density="hdpi"/>
-    <splash src="res/screen/android/drawable-port-xhdpi-screen.png" density="xhdpi"/>
-    <splash src="res/screen/android/drawable-port-xxhdpi-screen.png" density="xxhdpi"/>
-    <splash src="res/screen/android/drawable-port-xxxhdpi-screen.png" density="xxxhdpi"/>
+    <splash src="res/screen/android/drawable-mdpi-screen.png" density="mdpi"/>
+    <splash src="res/screen/android/drawable-hdpi-screen.png" density="hdpi"/>
+    <splash src="res/screen/android/drawable-xhdpi-screen.png" density="xhdpi"/>
+    <splash src="res/screen/android/drawable-xxhdpi-screen.png" density="xxhdpi"/>
+    <splash src="res/screen/android/drawable-xxxhdpi-screen.png" density="xxxhdpi"/>
     
 </platform>
 
