@@ -35,13 +35,15 @@ jobs:
           echo "export PATH=$ANDROID_HOME/cmdline-tools/bin:$ANDROID_HOME/platform-tools:$PATH" >> ~/.bashrc
           source ~/.bashrc
 
+      - name: Install Android SDK Components
+        run: |
+          mkdir -p $HOME/Android/cmdline-tools/bin
+          yes | $HOME/Android/cmdline-tools/bin/sdkmanager --update
+          yes | $HOME/Android/cmdline-tools/bin/sdkmanager "platforms;android-33" "build-tools;33.0.1" "platform-tools"
+
       - name: Accept Android SDK Licenses
         run: |
           yes | $HOME/Android/cmdline-tools/bin/sdkmanager --licenses
-
-      - name: Install Android SDK Components
-        run: |
-          $HOME/Android/cmdline-tools/bin/sdkmanager "platforms;android-33" "build-tools;33.0.1" "platform-tools"
 
       - name: Install Dependencies
         run: |
