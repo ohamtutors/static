@@ -30,64 +30,67 @@ jobs:
           sudo apt-get install -y android-sdk zipalign
           npm install -g cordova
 
-      - name: Check if `MyApp` Directory Exists
+      - name: Check if `Mentor-Nook` Directory Exists
         run: |
-          if [ ! -d "MyApp" ]; then
+          if [ ! -d "Mentor-Nook" ]; then
             echo "Creating Cordova Project..."
-            cordova create MyApp com.example.myapp MyApp
+            cordova create Mentor-Nook com.example.Mentor-Nook Mentor-Nook
           fi
 
-      - name: Navigate to `MyApp` and Add Android Platform
+      - name: Navigate to `Mentor-Nook` and Add Android Platform
         run: |
-          if [ -d "MyApp" ]; then
-            cd MyApp
+          if [ -d "Mentor-Nook" ]; then
+            cd Mentor-Nook
             cordova platform add android || true
           else
-            echo "Error: MyApp directory does not exist!"
+            echo "Error: Mentor-Nook directory does not exist!"
             exit 1
           fi
 
       - name: Install Cordova Plugins (File, File-Transfer, Permissions)
         run: |
-          cd MyApp
+          cd Mentor-Nook
           cordova plugin add cordova-plugin-file
           cordova plugin add cordova-plugin-file-transfer
           cordova plugin add cordova-plugin-android-permissions
           cordova plugin add cordova-plugin-inappbrowser
+          cordova plugin add cordova-plugin-dialogs
 
       - name: Modify `AndroidManifest.xml` to Grant File Permissions
         run: |
-          cd MyApp/platforms/android/app/src/main
+          cd Mentor-Nook/platforms/android/app/src/main
           sed -i '/<uses-permission android:name="android.permission.INTERNET" \/>/a \
           <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" /> \
           <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />' AndroidManifest.xml
 
       - name: Modify `config.xml` for WebView File Access
         run: |
-          cd MyApp
+          cd Mentor-Nook
           sed -i '/<platform name="android">/a \
           <preference name="AndroidPersistentFileLocation" value="Internal"/> \
           <preference name="AllowInlineMediaPlayback" value="true"/> \
           <preference name="AndroidInsecureFileModeEnabled" value="true"/> \
+          <plugin name="cordova-plugin-dialogs" source="npm" /> \
           <allow-navigation href="*" />' config.xml
 
       - name: Copy Updated Files to Cordova `www/`
         run: |
-          rm -rf MyApp/www/*
-          cp -r index.html MyApp/www/
-          cp -r assets MyApp/www/ || true
-          cp -r js MyApp/www/ || true
-          cp -r css MyApp/www/ || true
+          rm -rf Mentor-Nook/www/*
+          cp -r index.html Mentor-Nook/www/
+          cp -r assets Mentor-Nook/www/ || true
+          cp -r js Mentor-Nook/www/ || true
+          cp -r css Mentor-Nook/www/ || true
+     
 
       - name: Generate Keystore for Signing (if not exists)
         run: |
           if [ ! -f my-release-key.jks ]; then
-            keytool -genkey -v -keystore my-release-key.jks -keyalg RSA -keysize 2048 -validity 10000 -alias my-key-alias -storepass mypassword -keypass mypassword -dname "CN=MyApp, OU=MyOrg, O=MyCompany, L=City, S=State, C=US"
+            keytool -genkey -v -keystore my-release-key.jks -keyalg RSA -keysize 2048 -validity 10000 -alias my-key-alias -storepass mypassword -keypass mypassword -dname "CN=Mentor-Nook, OU=MyOrg, O=MyCompany, L=City, S=State, C=US"
           fi
 
       - name: Build APK and AAB
         run: |
-          cd MyApp
+          cd Mentor-Nook
           cordova build android --release -- --packageType=apk
           cordova build android --release -- --packageType=bundle
 
@@ -95,19 +98,19 @@ jobs:
         run: |
           jarsigner -verbose -sigalg SHA256withRSA -digestalg SHA-256 \
           -keystore my-release-key.jks -storepass mypassword -keypass mypassword \
-          MyApp/platforms/android/app/build/outputs/apk/release/app-release-unsigned.apk my-key-alias
+          Mentor-Nook/platforms/android/app/build/outputs/apk/release/app-release-unsigned.apk my-key-alias
 
       - name: Align APK for Installation
         run: |
           zipalign -v 4 \
-          MyApp/platforms/android/app/build/outputs/apk/release/app-release-unsigned.apk \
-          MyApp/platforms/android/app/build/outputs/apk/release/app-release.apk
+          Mentor-Nook/platforms/android/app/build/outputs/apk/release/app-release-unsigned.apk \
+          Mentor-Nook/platforms/android/app/build/outputs/apk/release/app-release.apk
 
       - name: Download BundleTool and Convert AAB to APK
         run: |
           wget -q -O bundletool.jar https://github.com/google/bundletool/releases/download/1.15.6/bundletool-all-1.15.6.jar
-          mv bundletool.jar MyApp/
-          cd MyApp
+          mv bundletool.jar Mentor-Nook/
+          cd Mentor-Nook
           java -jar bundletool.jar build-apks --bundle=platforms/android/app/build/outputs/bundle/release/app-release.aab --output=app-release.apks --mode=universal
           unzip app-release.apks -d app-release
 
@@ -116,5 +119,5 @@ jobs:
         with:
           name: app-release
           path: |
-            MyApp/platforms/android/app/build/outputs/apk/release/app-release.apk
-            MyApp/platforms/android/app/build/outputs/bundle/release/app-release.aab
+            Mentor-Nook/platforms/android/app/build/outputs/apk/release/app-release.apk
+            Mentor-Nook/platforms/android/app/build/outputs/bundle/release/app-release.aab
