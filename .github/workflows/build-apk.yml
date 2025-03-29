@@ -97,13 +97,19 @@ jobs:
           MentorNook/platforms/android/app/build/outputs/apk/release/app-release-unsigned.apk \
           MentorNook/platforms/android/app/build/outputs/apk/release/app-release.apk
 
-      - name: Sign AAB File (if needed)
+      - name: Sign APK File
         run: |
-          jarsigner -verbose -sigalg SHA256withRSA -digestalg SHA-256 \
-          -keystore my-release-key.jks -storepass ${{ secrets.KEYSTORE_PASSWORD }} \
-          MentorNook/platforms/android/app/build/outputs/bundle/release/app-release.aab \
-          ${{ secrets.KEY_ALIAS }}
-
+            unsigned_apk_path="MentorNook/platforms/android/app/build/outputs/apk/release/app-release-unsigned.apk"
+            signed_apk_path="MentorNook/platforms/android/app/build/outputs/apk/release/app-release.apk"
+            if [ -f "$unsigned_apk_path" ]; then
+            jarsigner -verbose -sigalg SHA256withRSA -digestalg SHA-256 \
+            -keystore my-release-key.jks -storepass ${{ secrets.KEYSTORE_PASSWORD }} \
+            "$unsigned_apk_path" ${{ secrets.KEY_ALIAS }}
+            else
+            echo "Unsigned APK not found at $unsigned_apk_path"
+            exit 1
+            fi
+            
       - name: Upload APK and AAB Artifacts
         uses: actions/upload-artifact@v4
         with:
