@@ -21,19 +21,16 @@ jobs:
       - name: Set up Docker to Build with Android SDK
         uses: addnab/docker-run-action@v3
         with:
-          image: codemagic/android:latest  # Use a pre-configured Docker image with Android SDK
-          options: --entrypoint ""  # Set a custom entrypoint if needed
+          image: reactnativecommunity/react-native-android:latest  # Use the pre-configured React Native Docker image
+          options: --entrypoint ""
           run: |
             # Start Docker container and setup build environment inside it
             cd /workspace
 
-            # Install necessary dependencies
-            apt-get update && apt-get install -y wget curl git
-
-            # Install cordova
+            # Install npm and cordova
             npm install -g cordova
 
-            # Create the cordova project
+            # Create the cordova project if it doesn't exist
             if [ ! -d "MentorNook" ]; then
               cordova create MentorNook com.example.MentorNook MentorNook
             fi
