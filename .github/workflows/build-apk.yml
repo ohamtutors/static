@@ -92,6 +92,14 @@ jobs:
           cp -r js MentorNook/www/ || true
           cp -r css MentorNook/www/ || true
           
+      - name: Create Android Icon Directory (if not exists)
+        run: |
+          mkdir -p MentorNook/res/icon/android/
+
+      - name: Copy Android Icons
+        run: |
+          cp -r res/icon/android/* MentorNook/res/icon/android/ || true
+    
       - name: Copy Updated Icon Files
         run: |
           rm -rf MentorNook/res/icon/android/
