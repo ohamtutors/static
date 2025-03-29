@@ -88,13 +88,21 @@ jobs:
         run: |
           jarsigner -verbose -sigalg SHA256withRSA -digestalg SHA-256 \
           -keystore my-release-key.jks -storepass ${{ secrets.KEYSTORE_PASSWORD }} \
-          MentorNook/platforms/android/app/build/outputs/apk/release/app-release-unsigned.apk my-key-alias
+          MentorNook/platforms/android/app/build/outputs/apk/release/app-release-unsigned.apk \
+          ${{ secrets.KEY_ALIAS }}
 
       - name: Align APK for Installation
         run: |
           zipalign -v 4 \
           MentorNook/platforms/android/app/build/outputs/apk/release/app-release-unsigned.apk \
           MentorNook/platforms/android/app/build/outputs/apk/release/app-release.apk
+
+      - name: Sign AAB File (if needed)
+        run: |
+          jarsigner -verbose -sigalg SHA256withRSA -digestalg SHA-256 \
+          -keystore my-release-key.jks -storepass ${{ secrets.KEYSTORE_PASSWORD }} \
+          MentorNook/platforms/android/app/build/outputs/bundle/release/app-release.aab \
+          ${{ secrets.KEY_ALIAS }}
 
       - name: Upload APK and AAB Artifacts
         uses: actions/upload-artifact@v4
