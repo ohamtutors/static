@@ -24,16 +24,28 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Install Dependencies
+      - name: Install Android SDK and Command Line Tools
         run: |
           sudo apt-get update
-          sudo apt-get install -y android-sdk zipalign
-          npm install -g cordova
+          sudo apt-get install -y wget unzip
+          wget https://dl.google.com/android/repository/commandlinetools-linux-7583922_latest.zip
+          mkdir -p $HOME/Android/cmdline-tools
+          unzip commandlinetools-linux-7583922_latest.zip -d $HOME/Android/cmdline-tools
+          echo "export ANDROID_HOME=$HOME/Android" >> ~/.bashrc
+          echo "export PATH=$ANDROID_HOME/cmdline-tools/bin:$ANDROID_HOME/platform-tools:$PATH" >> ~/.bashrc
+          source ~/.bashrc
+
+      - name: Accept Android SDK Licenses
+        run: |
+          yes | $HOME/Android/cmdline-tools/bin/sdkmanager --licenses
 
       - name: Install Android SDK Components
         run: |
-          yes | sdkmanager --licenses
-          sdkmanager "platforms;android-33" "build-tools;33.0.1" "platform-tools"
+          $HOME/Android/cmdline-tools/bin/sdkmanager "platforms;android-33" "build-tools;33.0.1" "platform-tools"
+
+      - name: Install Dependencies
+        run: |
+          npm install -g cordova
 
       - name: List Repository Files (Debug)
         run: ls -la
