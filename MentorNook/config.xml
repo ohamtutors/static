@@ -5,7 +5,34 @@
     <author email="dev@cordova.apache.org" href="https://cordova.apache.org">
         Apache Cordova Team
     </author>
+    
+    <!-- Set the starting page -->
     <content src="index.html" />
+
+    <!-- Allow navigation -->
+    <allow-navigation href="*" />
+
+    <!-- Allow intent -->
     <allow-intent href="http://*/*" />
     <allow-intent href="https://*/*" />
+
+    <!-- Required Permissions -->
+    <platform name="android">
+        <config-file target="AndroidManifest.xml" parent="/*">
+            <uses-permission android:name="android.permission.INTERNET"/>
+            <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
+        </config-file>
+    </platform>
+
+    <!-- Required Preferences -->
+    <preference name="AndroidInsecureFileModeEnabled" value="true"/>
+    <preference name="AndroidPersistentFileLocation" value="Internal"/>
+    <preference name="AllowInlineMediaPlayback" value="true"/>
+
+    <!-- Cordova Plugins -->
+    <plugin name="cordova-plugin-dialogs" source="npm"/>
+    <plugin name="cordova-plugin-inappbrowser" source="npm"/>
+    <plugin name="cordova-plugin-file" source="npm"/>
+    <plugin name="cordova-plugin-file-transfer" source="npm"/>
+    <plugin name="cordova-plugin-android-permissions" source="npm"/>
 </widget>
