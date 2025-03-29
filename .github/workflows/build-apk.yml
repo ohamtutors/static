@@ -24,20 +24,21 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Install Android SDK and Command Line Tools
+      - name: Install Android SDK Command Line Tools
         run: |
           sudo apt-get update
           sudo apt-get install -y wget unzip
-          wget https://dl.google.com/android/repository/commandlinetools-linux-7583922_latest.zip
+          # Download and extract Android SDK Command Line Tools
+          wget https://dl.google.com/android/repository/commandlinetools-linux-7583922_latest.zip -P $HOME/Android
           mkdir -p $HOME/Android/cmdline-tools
-          unzip commandlinetools-linux-7583922_latest.zip -d $HOME/Android/cmdline-tools
+          unzip $HOME/Android/commandlinetools-linux-7583922_latest.zip -d $HOME/Android/cmdline-tools
           echo "export ANDROID_HOME=$HOME/Android" >> ~/.bashrc
           echo "export PATH=$ANDROID_HOME/cmdline-tools/bin:$ANDROID_HOME/platform-tools:$PATH" >> ~/.bashrc
           source ~/.bashrc
 
       - name: Install Android SDK Components
         run: |
-          mkdir -p $HOME/Android/cmdline-tools/bin
+          # Accept the licenses and install components
           yes | $HOME/Android/cmdline-tools/bin/sdkmanager --update
           yes | $HOME/Android/cmdline-tools/bin/sdkmanager "platforms;android-33" "build-tools;33.0.1" "platform-tools"
 
