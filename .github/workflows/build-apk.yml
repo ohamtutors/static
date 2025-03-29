@@ -16,7 +16,7 @@ jobs:
 
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: Set Up JDK 17
         uses: actions/setup-java@v2
@@ -30,8 +30,14 @@ jobs:
           sudo apt-get install -y android-sdk zipalign
           npm install -g cordova
 
-      - name: List Repository Files (Debug)
-        run: ls -la
+      - name: Install Gradle 8.1 (Fix Deprecation Issues)
+        run: |
+          wget https://services.gradle.org/distributions/gradle-8.1-bin.zip
+          unzip gradle-8.1-bin.zip -d ~/gradle
+          echo "export PATH=~/gradle/gradle-8.1/bin:$PATH" >> $GITHUB_ENV
+
+      - name: Display Gradle Version (Debugging)
+        run: gradle -v
 
       - name: Ensure Cordova Project Exists
         run: |
@@ -39,10 +45,11 @@ jobs:
             cordova create MentorNook com.example.MentorNook MentorNook
           fi
 
-      - name: Add Android Platform
+      - name: Add Android Platform (Force Reinstall)
         run: |
           cd MentorNook
-          cordova platform add android || true
+          cordova platform rm android || true
+          cordova platform add android@12.0.0
 
       - name: Ensure `MentorNook` is Tracked in Git
         run: |
@@ -99,11 +106,14 @@ jobs:
             -dname "CN=MentorNook, OU=MyOrg, O=MyCompany, L=City, S=State, C=US"
           fi
 
-      - name: Build APK and AAB
+      - name: Build APK and AAB (Using Gradle 8.1)
         run: |
           cd MentorNook
-          cordova build android --release -- --packageType=apk
-          cordova build android --release -- --packageType=bundle
+          echo "android.useAndroidX=true" >> platforms/android/gradle.properties
+          echo "android.enableJetifier=true" >> platforms/android/gradle.properties
+          echo "org.gradle.warning.mode=all" >> platforms/android/gradle.properties
+          cordova build android --release -- --gradleVersion=8.1 --packageType=apk
+          cordova build android --release -- --gradleVersion=8.1 --packageType=bundle
 
       - name: Sign APK File
         run: |
