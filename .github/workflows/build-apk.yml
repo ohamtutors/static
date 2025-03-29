@@ -102,7 +102,6 @@ jobs:
     
       - name: Copy Updated Icon Files
         run: |
-          rm -rf MentorNook/res/icon/android/
           mkdir -p MentorNook/res/icon/android/
           cp -r res/icon/android/* MentorNook/res/icon/android/
           
