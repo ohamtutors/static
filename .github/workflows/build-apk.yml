@@ -16,37 +16,31 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Set up JDK 17
-        uses: actions/setup-java@v2
+        uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Install Dependencies (Node.js, Cordova, Android SDK)
+      - name: Install Dependencies
         run: |
           sudo apt-get update
           sudo apt-get install -y android-sdk zipalign
           npm install -g cordova
 
-      - name: Check if `MentorNook` Directory Exists
+      - name: List Repository Files (Debug)
+        run: |
+          echo "Listing repository files:"
+          ls -la
+
+      - name: Ensure `MentorNook` Directory Exists
         run: |
           if [ ! -d "MentorNook" ]; then
             echo "Creating Cordova Project..."
             cordova create MentorNook com.example.MentorNook MentorNook
           fi
-
-      - name: Debug: List Repository Files
-        run: ls -R
-
-      - name: Ensure `MentorNook` is Tracked in Git
-        run: |
-          git config --global user.email "your-email@example.com"
-          git config --global user.name "GitHub Actions"
-          git add MentorNook || true
-          git commit -m "Added MentorNook folder from CI/CD pipeline" || true
-          git push origin main || true
 
       - name: Navigate to `MentorNook` and Add Android Platform
         run: |
@@ -62,7 +56,7 @@ jobs:
           cordova plugin add cordova-plugin-inappbrowser
           cordova plugin add cordova-plugin-dialogs
 
-      - name: Modify `AndroidManifest.xml` to Grant File Permissions
+      - name: Modify `AndroidManifest.xml` for Permissions
         run: |
           cd MentorNook/platforms/android/app/src/main
           sed -i '/<uses-permission android:name="android.permission.INTERNET" \/>/a \
@@ -87,7 +81,7 @@ jobs:
           cp -r js MentorNook/www/ || true
           cp -r css MentorNook/www/ || true
 
-      - name: Generate Keystore for Signing (if not exists)
+      - name: Generate Keystore (if not exists)
         run: |
           if [ ! -f my-release-key.jks ]; then
             keytool -genkey -v -keystore my-release-key.jks -keyalg RSA -keysize 2048 -validity 10000 -alias my-key-alias -storepass mypassword -keypass mypassword -dname "CN=MentorNook, OU=MyOrg, O=MyCompany, L=City, S=State, C=US"
@@ -112,7 +106,7 @@ jobs:
           MentorNook/platforms/android/app/build/outputs/apk/release/app-release.apk
 
       - name: Upload APK and AAB Artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         with:
           name: app-release
           path: |
