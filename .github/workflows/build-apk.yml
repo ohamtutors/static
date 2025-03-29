@@ -16,7 +16,7 @@ jobs:
 
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v2
 
       - name: Set Up JDK 17
         uses: actions/setup-java@v2
@@ -30,14 +30,13 @@ jobs:
           sudo apt-get install -y android-sdk zipalign
           npm install -g cordova
 
-      - name: Install Gradle 8.1 (Fix Deprecation Issues)
+      - name: Install Android SDK Components
         run: |
-          wget https://services.gradle.org/distributions/gradle-8.1-bin.zip
-          unzip gradle-8.1-bin.zip -d ~/gradle
-          echo "export PATH=~/gradle/gradle-8.1/bin:$PATH" >> $GITHUB_ENV
+          yes | sdkmanager --licenses
+          sdkmanager "platforms;android-33" "build-tools;33.0.1" "platform-tools"
 
-      - name: Display Gradle Version (Debugging)
-        run: gradle -v
+      - name: List Repository Files (Debug)
+        run: ls -la
 
       - name: Ensure Cordova Project Exists
         run: |
@@ -45,11 +44,10 @@ jobs:
             cordova create MentorNook com.example.MentorNook MentorNook
           fi
 
-      - name: Add Android Platform (Force Reinstall)
+      - name: Add Android Platform
         run: |
           cd MentorNook
-          cordova platform rm android || true
-          cordova platform add android@12.0.0
+          cordova platform add android || true
 
       - name: Ensure `MentorNook` is Tracked in Git
         run: |
@@ -67,16 +65,6 @@ jobs:
           cordova plugin add cordova-plugin-android-permissions
           cordova plugin add cordova-plugin-inappbrowser
           cordova plugin add cordova-plugin-dialogs
-
-      - name: Modify `AndroidManifest.xml` to Grant File Permissions
-        run: |
-          cd MentorNook/platforms/android/app/src/main
-          if ! grep -q "android.permission.WRITE_EXTERNAL_STORAGE" AndroidManifest.xml; then
-            sed -i '/<uses-permission android:name="android.permission.INTERNET" \/>/a \
-            <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" /> \
-            <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" /> \
-            <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />' AndroidManifest.xml
-          fi
 
       - name: Modify `config.xml` for WebView File Access
         run: |
@@ -98,6 +86,16 @@ jobs:
           cp -r js MentorNook/www/ || true
           cp -r css MentorNook/www/ || true
 
+      - name: Ensure Gradlew is Executable
+        run: |
+          chmod +x MentorNook/platforms/android/gradlew
+
+      - name: Reinstall Cordova Android Platform
+        run: |
+          cd MentorNook
+          cordova platform rm android
+          cordova platform add android
+
       - name: Generate Keystore for Signing (if not exists)
         run: |
           if [ ! -f my-release-key.jks ]; then
@@ -106,14 +104,11 @@ jobs:
             -dname "CN=MentorNook, OU=MyOrg, O=MyCompany, L=City, S=State, C=US"
           fi
 
-      - name: Build APK and AAB (Using Gradle 8.1)
+      - name: Build APK and AAB with Debug Logs
         run: |
           cd MentorNook
-          echo "android.useAndroidX=true" >> platforms/android/gradle.properties
-          echo "android.enableJetifier=true" >> platforms/android/gradle.properties
-          echo "org.gradle.warning.mode=all" >> platforms/android/gradle.properties
-          cordova build android --release -- --gradleVersion=8.1 --packageType=apk
-          cordova build android --release -- --gradleVersion=8.1 --packageType=bundle
+          cordova build android --release -- --packageType=apk --verbose
+          cordova build android --release -- --packageType=bundle --verbose
 
       - name: Sign APK File
         run: |
