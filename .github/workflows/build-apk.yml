@@ -91,7 +91,13 @@ jobs:
           cp -r assets MentorNook/www/ || true
           cp -r js MentorNook/www/ || true
           cp -r css MentorNook/www/ || true
-
+          
+      - name: Copy Updated Icon Files
+        run: |
+          rm -rf MentorNook/res/icon/android/
+          mkdir -p MentorNook/res/icon/android/
+          cp -r res/icon/android/* MentorNook/res/icon/android/
+          
       - name: Generate Keystore for Signing (if not exists)
         run: |
           if [ ! -f my-release-key.jks ]; then
