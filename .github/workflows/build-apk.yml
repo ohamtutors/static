@@ -18,129 +18,75 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v2
 
-      - name: Set Up JDK 17
-        uses: actions/setup-java@v2
+      - name: Set up Docker to Build with Android SDK
+        uses: addnab/docker-run-action@v3
         with:
-          distribution: 'temurin'
-          java-version: '17'
+          image: codemagic/android:latest  # Use a pre-configured Docker image with Android SDK
+          options: --entrypoint ""  # Set a custom entrypoint if needed
+          run: |
+            # Start Docker container and setup build environment inside it
+            cd /workspace
 
-      - name: Install Android SDK Command Line Tools
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y wget unzip
-          # Download and extract Android SDK Command Line Tools
-          wget https://dl.google.com/android/repository/commandlinetools-linux-7583922_latest.zip -P $HOME/Android
-          mkdir -p $HOME/Android/cmdline-tools
-          unzip $HOME/Android/commandlinetools-linux-7583922_latest.zip -d $HOME/Android/cmdline-tools
-          echo "export ANDROID_HOME=$HOME/Android" >> ~/.bashrc
-          echo "export PATH=$ANDROID_HOME/cmdline-tools/bin:$ANDROID_HOME/platform-tools:$PATH" >> ~/.bashrc
-          source ~/.bashrc
+            # Install necessary dependencies
+            apt-get update && apt-get install -y wget curl git
 
-      - name: Install Android SDK Components
-        run: |
-          # Accept the licenses and install components
-          yes | $HOME/Android/cmdline-tools/bin/sdkmanager --update
-          yes | $HOME/Android/cmdline-tools/bin/sdkmanager "platforms;android-33" "build-tools;33.0.1" "platform-tools"
+            # Install cordova
+            npm install -g cordova
 
-      - name: Accept Android SDK Licenses
-        run: |
-          yes | $HOME/Android/cmdline-tools/bin/sdkmanager --licenses
+            # Create the cordova project
+            if [ ! -d "MentorNook" ]; then
+              cordova create MentorNook com.example.MentorNook MentorNook
+            fi
 
-      - name: Install Dependencies
-        run: |
-          npm install -g cordova
+            # Add Android platform
+            cd MentorNook
+            cordova platform add android || true
 
-      - name: List Repository Files (Debug)
-        run: ls -la
+            # Install Cordova plugins
+            cordova plugin add cordova-plugin-file
+            cordova plugin add cordova-plugin-file-transfer
+            cordova plugin add cordova-plugin-android-permissions
+            cordova plugin add cordova-plugin-inappbrowser
+            cordova plugin add cordova-plugin-dialogs
 
-      - name: Ensure Cordova Project Exists
-        run: |
-          if [ ! -d "MentorNook" ]; then
-            cordova create MentorNook com.example.MentorNook MentorNook
-          fi
+            # Modify config.xml for WebView file access
+            if ! grep -q "AndroidPersistentFileLocation" config.xml; then
+              sed -i '/<platform name="android">/a \
+              <preference name="AndroidPersistentFileLocation" value="Internal"/> \
+              <preference name="AllowInlineMediaPlayback" value="true"/> \
+              <preference name="AndroidInsecureFileModeEnabled" value="true"/> \
+              <plugin name="cordova-plugin-dialogs" source="npm" /> \
+              <allow-navigation href="*" />' config.xml
+            fi
 
-      - name: Add Android Platform
-        run: |
-          cd MentorNook
-          cordova platform add android || true
+            # Copy updated files to Cordova's www/ directory
+            rm -rf www/*
+            cp -r ../index.html www/
+            cp -r ../assets www/
+            cp -r ../js www/
+            cp -r ../css www/
 
-      - name: Ensure `MentorNook` is Tracked in Git
-        run: |
-          git config --global user.email "ohamiitkota@gmail.com"
-          git config --global user.name "ohamtutors"
-          git add MentorNook || true
-          git commit -m "Added MentorNook folder from CI/CD pipeline" || true
-          git push origin main || true
+            # Build the APK and AAB
+            cordova build android --release -- --packageType=apk --verbose
+            cordova build android --release -- --packageType=bundle --verbose
 
-      - name: Install Cordova Plugins
-        run: |
-          cd MentorNook
-          cordova plugin add cordova-plugin-file
-          cordova plugin add cordova-plugin-file-transfer
-          cordova plugin add cordova-plugin-android-permissions
-          cordova plugin add cordova-plugin-inappbrowser
-          cordova plugin add cordova-plugin-dialogs
+            # Sign the APK
+            jarsigner -verbose -sigalg SHA256withRSA -digestalg SHA-256 \
+            -keystore my-release-key.jks -storepass mypassword -keypass mypassword \
+            platforms/android/app/build/outputs/apk/release/app-release-unsigned.apk my-key-alias
 
-      - name: Modify `config.xml` for WebView File Access
-        run: |
-          cd MentorNook
-          if ! grep -q "AndroidPersistentFileLocation" config.xml; then
-            sed -i '/<platform name="android">/a \
-            <preference name="AndroidPersistentFileLocation" value="Internal"/> \
-            <preference name="AllowInlineMediaPlayback" value="true"/> \
-            <preference name="AndroidInsecureFileModeEnabled" value="true"/> \
-            <plugin name="cordova-plugin-dialogs" source="npm" /> \
-            <allow-navigation href="*" />' config.xml
-          fi
+            # Align the APK for installation
+            zipalign -v 4 \
+            platforms/android/app/build/outputs/apk/release/app-release-unsigned.apk \
+            platforms/android/app/build/outputs/apk/release/app-release.apk
 
-      - name: Copy Updated Files to Cordova `www/`
-        run: |
-          rm -rf MentorNook/www/*
-          cp -r index.html MentorNook/www/
-          cp -r assets MentorNook/www/ || true
-          cp -r js MentorNook/www/ || true
-          cp -r css MentorNook/www/ || true
-
-      - name: Ensure Gradlew is Executable
-        run: |
-          chmod +x MentorNook/platforms/android/gradlew
-
-      - name: Reinstall Cordova Android Platform
-        run: |
-          cd MentorNook
-          cordova platform rm android
-          cordova platform add android
-
-      - name: Generate Keystore for Signing (if not exists)
-        run: |
-          if [ ! -f my-release-key.jks ]; then
-            keytool -genkey -v -keystore my-release-key.jks -keyalg RSA -keysize 2048 -validity 10000 \
-            -alias my-key-alias -storepass mypassword -keypass mypassword \
-            -dname "CN=MentorNook, OU=MyOrg, O=MyCompany, L=City, S=State, C=US"
-          fi
-
-      - name: Build APK and AAB with Debug Logs
-        run: |
-          cd MentorNook
-          cordova build android --release -- --packageType=apk --verbose
-          cordova build android --release -- --packageType=bundle --verbose
-
-      - name: Sign APK File
-        run: |
-          jarsigner -verbose -sigalg SHA256withRSA -digestalg SHA-256 \
-          -keystore my-release-key.jks -storepass mypassword -keypass mypassword \
-          MentorNook/platforms/android/app/build/outputs/apk/release/app-release-unsigned.apk my-key-alias
-
-      - name: Align APK for Installation
-        run: |
-          zipalign -v 4 \
-          MentorNook/platforms/android/app/build/outputs/apk/release/app-release-unsigned.apk \
-          MentorNook/platforms/android/app/build/outputs/apk/release/app-release.apk
+            # Upload APK and AAB Artifacts
+            mkdir -p /workspace/artifacts
+            cp platforms/android/app/build/outputs/apk/release/app-release.apk /workspace/artifacts/
+            cp platforms/android/app/build/outputs/bundle/release/app-release.aab /workspace/artifacts/
 
       - name: Upload APK and AAB Artifacts
         uses: actions/upload-artifact@v4
         with:
           name: app-release
-          path: |
-            MentorNook/platforms/android/app/build/outputs/apk/release/app-release.apk
-            MentorNook/platforms/android/app/build/outputs/bundle/release/app-release.aab
+          path: /workspace/artifacts/*
