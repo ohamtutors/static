@@ -38,33 +38,23 @@
     }
   </style>
   <script>
-	  document.addEventListener("deviceready", function () {
-    console.log("Device is ready!");
-
-    document.addEventListener("backbutton", function (e) {
-        e.preventDefault();
-        console.log("Back button pressed");
-
-        if (typeof navigator.notification !== "undefined") {
-            navigator.notification.confirm(
-                "Do you want to exit the app?", 
-                function (buttonIndex) {
-                    console.log("Button clicked:", buttonIndex);
-                    if (buttonIndex === 1) {
-                        navigator.app.exitApp();
-                    }
-                },
-                "Exit App",
-                ["Yes", "No"]
-            );
-        } else {
-            console.log("navigator.notification not found, using window.confirm");
-            if (window.confirm("Do you want to exit the app?")) {
-                navigator.app.exitApp();
-            }
-        }
+	  document.addEventListener('deviceready', function () {
+    document.addEventListener('backbutton', function (e) {
+        e.preventDefault(); // Prevent default behavior (exit app)
+        
+        navigator.notification.confirm(
+            "Do you want to exit the app?", // Message
+            function (buttonIndex) {
+                if (buttonIndex === 1) {
+                    navigator.app.exitApp(); // Exit the app
+                }
+            },
+            "Exit App", // Title
+            ["Yes", "No"] // Button labels
+        );
     }, false);
 }, false);
+
 
     function saveIframeScroll() {
       let iframe = document.getElementById("myIframe");
