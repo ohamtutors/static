@@ -21,6 +21,18 @@
 // See https://cordova.apache.org/docs/en/latest/cordova/events/events.html#deviceready
 document.addEventListener('deviceready', onDeviceReady, false);
 
+document.addEventListener('deviceready', function () {
+    console.log('Cordova is initialized.');
+
+    // Ensure the splash screen hides after 3 seconds
+    setTimeout(function () {
+        if (navigator.splashscreen) {
+            navigator.splashscreen.hide();
+            console.log('Splash screen hidden');
+        } else {
+            console.log('Splash screen plugin not found');
+        }
+    }, 100);
 
     // Override the back button behavior
     document.addEventListener('backbutton', function (e) {
