@@ -86,9 +86,6 @@ jobs:
           <preference name="AndroidPersistentFileLocation" value="Internal"/> \
           <preference name="AllowInlineMediaPlayback" value="true"/> \
           <preference name="AndroidInsecureFileModeEnabled" value="true"/> \
-          <preference name="SplashScreen" value="screen"/> \
-          <preference name="SplashScreenDelay" value="3000"/> \
-          <preference name="AutoHideSplashScreen" value="true"/> \
           <plugin name="cordova-plugin-dialogs" source="npm" /> \
           <allow-navigation href="*" />' config.xml
 
@@ -112,17 +109,6 @@ jobs:
         run: |
           mkdir -p MentorNook/res/icon/android/
           cp -r res/icon/android/* MentorNook/res/icon/android/
-      
-      - name: Copy Splash Screen Assets to `res/screen/android`
-        run: |
-          mkdir -p MentorNook/res/screen/android/
-          cp -r res/screen/android/* MentorNook/res/screen/android/ || true
-
-      - name: Remove and Re-add Android Platform (Fix Splash Issues)
-        run: |
-          cd MentorNook
-          cordova platform rm android || true
-          cordova platform add android
     
       - name: Generate Keystore for Signing (if not exists)
         run: |
