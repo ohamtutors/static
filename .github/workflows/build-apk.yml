@@ -108,10 +108,14 @@ jobs:
           cp -r res/icon/android/* MentorNook/res/icon/android/
 
       - name: Remove existing Android platform
-        run: cordova platform rm android || echo "Android platform not found, skipping removal"
+        run: |
+          cd MentorNook
+          cordova platform rm android || echo "Android platform not found, skipping removal"
 
       - name: Add Android platform
-        run: cordova platform add android 
+        run: |
+          cd MentorNook
+          cordova platform add android 
               
       - name: Generate Keystore for Signing (if not exists)
         run: |
