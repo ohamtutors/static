@@ -109,10 +109,14 @@ jobs:
           cp -r res/icon/android/* MentorNook/res/icon/android/
           
       - name: Remove Existing Splash Plugin
-        run: cordova plugin rm cordova-plugin-splashscreen || true
+        run: |
+          cd MentorNook
+          cordova plugin rm cordova-plugin-splashscreen || true
 
-      - name: Add Splash Plugin
-        run: cordova plugin add cordova-plugin-splashscreen
+      - name: Add Splash Plugi
+        run: |
+            cd MentorNook
+            cordova plugin add cordova-plugin-splashscreen
 
       - name: Build Android App
         run: |
