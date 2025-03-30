@@ -22,34 +22,32 @@
 document.addEventListener('deviceready', onDeviceReady, false);
 
 function onDeviceReady() {
-    // Cordova is now initialized. Have fun!
+    console.log('Cordova is initialized.');
 
-    console.log('Running cordova-' + cordova.platformId + '@' + cordova.version);
-    document.getElementById('deviceready').classList.add('ready');
-}
-document.addEventListener('deviceready', function () {
-    // Override the back button action
-    
+    // Ensure the splash screen hides after 3 seconds
     setTimeout(function () {
-        navigator.splashscreen.hide(); // Hide the splash screen
-    }, 3000); // Delay in ms, can adjust as needed
-    
+        if (navigator.splashscreen) {
+            navigator.splashscreen.hide();
+            console.log('Splash screen hidden');
+        } else {
+            console.log('Splash screen plugin not found');
+        }
+    }, 3000);
+
+    // Override the back button behavior
     document.addEventListener('backbutton', function (e) {
-        // Show a confirmation dialog
+        e.preventDefault(); // Prevent default back button behavior
+
+        // Show exit confirmation popup
         navigator.notification.confirm(
-            'Do you really want to exit?', // message
+            'Do you really want to exit?', 
             function (buttonIndex) {
                 if (buttonIndex === 1) {
-                    // Yes button pressed, exit the app
                     navigator.app.exitApp(); // Close the app
-                } else {
-                    // No button pressed, continue the app
-                    e.preventDefault(); // Prevent default behavior (closing the app)
                 }
             },
-            'Exit Confirmation', // title
-            ['Yes', 'No'] // button names
+            'Exit Confirmation', 
+            ['Yes', 'No']
         );
     }, false);
-}, false);
-
+}
