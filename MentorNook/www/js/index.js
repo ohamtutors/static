@@ -32,7 +32,7 @@ function onDeviceReady() {
         } else {
             console.log('Splash screen plugin not found');
         }
-    }, 3000);
+    }, 1000);
 
     // Override the back button behavior
     document.addEventListener('backbutton', function (e) {
