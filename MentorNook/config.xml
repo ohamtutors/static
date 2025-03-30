@@ -9,10 +9,6 @@
     <allow-intent href="http://*/*" />
     <allow-intent href="https://*/*" />
    <platform name="android">
-    <preference name="SplashScreen" value="splash" />
-    <preference name="SplashScreenDelay" value="3000" /> 
-    <preference name="FadeSplashScreen" value="true"/>
-    <preference name="FadeSplashScreenDuration" value="500"/>
     <preference name="AutoHideSplashScreen" value="true"/>
     <preference name="ShowSplashScreenSpinner" value="false"/>
     <icon src="res/icon/android/drawable-mdpi-icon.png" density="mdpi"/>
