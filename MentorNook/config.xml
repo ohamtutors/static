@@ -15,13 +15,11 @@
     <preference name="FadeSplashScreenDuration" value="500"/>
     <preference name="AutoHideSplashScreen" value="true"/>
     <preference name="ShowSplashScreenSpinner" value="false"/>
-    
     <icon src="res/icon/android/drawable-mdpi-icon.png" density="mdpi"/>
     <icon src="res/icon/android/drawable-hdpi-icon.png" density="hdpi"/>
     <icon src="res/icon/android/drawable-xhdpi-icon.png" density="xhdpi"/>
     <icon src="res/icon/android/drawable-xxhdpi-icon.png" density="xxhdpi"/>
     <icon src="res/icon/android/drawable-xxxhdpi-icon.png" density="xxxhdpi"/>
-
     <splash src="res/screen/android/drawable-mdpi-screen.png" density="mdpi"/>
     <splash src="res/screen/android/drawable-hdpi-screen.png" density="hdpi"/>
     <splash src="res/screen/android/drawable-xhdpi-screen.png" density="xhdpi"/>
