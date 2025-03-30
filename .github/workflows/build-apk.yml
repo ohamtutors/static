@@ -7,7 +7,6 @@ on:
       - "assets/**"
       - "css/**"
       - "js/**"
-      - "res/screen/android/**"
       - "res/icon/android/**"
     branches:
       - main
@@ -107,24 +106,7 @@ jobs:
         run: |
           mkdir -p MentorNook/res/icon/android/
           cp -r res/icon/android/* MentorNook/res/icon/android/
-          
-      - name: Remove Existing Splash Plugin
-        run: |
-          cd MentorNook
-          cordova plugin rm cordova-plugin-splashscreen || true
-
-      - name: Add Splash Plugi
-        run: |
-            cd MentorNook
-            cordova plugin add cordova-plugin-splashscreen
-
-      - name: Build Android App
-        run: |
-          cd MentorNook
-          cordova platform rm android
-          cordova platform add android
-          cordova build android
-          
+                    
       - name: Generate Keystore for Signing (if not exists)
         run: |
           if [ ! -f my-release-key.jks ]; then
