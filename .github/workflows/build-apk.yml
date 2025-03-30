@@ -7,7 +7,7 @@ on:
       - "assets/**"
       - "css/**"
       - "js/**"
-      - "res/screen/android/**"
+      - "res/splash/android/**"
       - "res/icon/android/**"
     branches:
       - main
