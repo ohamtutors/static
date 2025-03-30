@@ -120,6 +120,7 @@ jobs:
 
       - name: Build Android App
         run: |
+          cd MentorNook
           cordova platform rm android
           cordova platform add android
           cordova build android
