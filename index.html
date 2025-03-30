@@ -38,22 +38,6 @@
     }
   </style>
   <script>
-	  document.addEventListener('deviceready', function () {
-    document.addEventListener('backbutton', function (e) {
-        e.preventDefault(); // Prevent default behavior (exit app)
-        
-        navigator.notification.confirm(
-            "Do you want to exit the app?", // Message
-            function (buttonIndex) {
-                if (buttonIndex === 1) {
-                    navigator.app.exitApp(); // Exit the app
-                }
-            },
-            "Exit App", // Title
-            ["Yes", "No"] // Button labels
-        );
-    }, false);
-}, false);
 
 
     function saveIframeScroll() {
