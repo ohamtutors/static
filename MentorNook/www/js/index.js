@@ -29,6 +29,11 @@ function onDeviceReady() {
 }
 document.addEventListener('deviceready', function () {
     // Override the back button action
+    
+    setTimeout(function () {
+        navigator.splashscreen.hide(); // Hide the splash screen
+    }, 3000); // Delay in ms, can adjust as needed
+    
     document.addEventListener('backbutton', function (e) {
         // Show a confirmation dialog
         navigator.notification.confirm(
