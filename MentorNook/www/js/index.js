@@ -27,10 +27,24 @@ function onDeviceReady() {
     console.log('Running cordova-' + cordova.platformId + '@' + cordova.version);
     document.getElementById('deviceready').classList.add('ready');
 }
-
 document.addEventListener('deviceready', function () {
-    // Hide splash screen explicitly after app is fully loaded
-    setTimeout(function () {
-        navigator.splashscreen.hide();
-    }, 500); // Reduce delay time to avoid black screen
+    // Override the back button action
+    document.addEventListener('backbutton', function (e) {
+        // Show a confirmation dialog
+        navigator.notification.confirm(
+            'Do you really want to exit?', // message
+            function (buttonIndex) {
+                if (buttonIndex === 1) {
+                    // Yes button pressed, exit the app
+                    navigator.app.exitApp(); // Close the app
+                } else {
+                    // No button pressed, continue the app
+                    e.preventDefault(); // Prevent default behavior (closing the app)
+                }
+            },
+            'Exit Confirmation', // title
+            ['Yes', 'No'] // button names
+        );
+    }, false);
 }, false);
+
