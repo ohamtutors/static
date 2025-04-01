@@ -80,13 +80,14 @@ jobs:
         run: |
           cd MentorNook
           sed -i '/<platform name="android">/a \
-          <preference name="AndroidPersistentFileLocation" value="Internal"/> \
-          <preference name="AllowInlineMediaPlayback" value="true"/> \
-          <preference name="AndroidInsecureFileModeEnabled" value="true"/> \
-          <plugin name="cordova-plugin-dialogs" source="npm" /> \      
-          <preference name="AutoHideSplashScreen" value="false" /> \
-          <preference name="SplashScreenDelay" value="100" /> \  
+          <preference name="AndroidPersistentFileLocation" value="Internal"/>\n\
+          <preference name="AllowInlineMediaPlayback" value="true"/>\n\
+          <preference name="AndroidInsecureFileModeEnabled" value="true"/>\n\
+          <plugin name="cordova-plugin-dialogs" source="npm" />\n\
+          <preference name="AutoHideSplashScreen" value="false" />\n\
+          <preference name="SplashScreenDelay" value="100" />\n\
           <allow-navigation href="*" />' config.xml
+
 
       - name: Copy Updated Files to Cordova `www/`
         run: |
