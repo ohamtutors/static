@@ -9,7 +9,7 @@
     <allow-intent href="http://*/*" />
     <allow-intent href="https://*/*" />
    <platform name="android">
-    <preference name="AutoHideSplashScreen" value="false" />   
+    <preference name="AutoHideSplashScreen" value="true" />   
     <preference name="SplashScreenDelay" value="100" />   
     <icon src="res/icon/android/drawable-mdpi-icon.png" density="mdpi"/>
     <icon src="res/icon/android/drawable-hdpi-icon.png" density="hdpi"/>
