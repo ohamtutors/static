@@ -13,11 +13,11 @@
     <preference name="SplashScreenDelay" value="10" />
     <preference name="SplashScreen" value="res/screen/android/splash-screen.png"/>   
     <preference name="FadeSplashScreen" value="false"/>     
-    <splash src="res/screens/android/drawable-hdpi-screen.png" density="hdpi"/>
-    <splash src="res/screens/android/drawable-mdpi-screen.png" density="mdpi"/>
-    <splash src="res/screens/android/drawable-xhdpi-screen.png" density="xhdpi"/>
-    <splash src="res/screens/android/drawable-xxhdpi-screen.png" density="xxhdpi"/>
-    <splash src="res/screens/android/drawable-xxxhdpi-screen.png" density="xxxhdpi"/>
+    <splash src="res/screen/android/drawable-hdpi-screen.png" density="hdpi"/>
+    <splash src="res/screen/android/drawable-mdpi-screen.png" density="mdpi"/>
+    <splash src="res/screen/android/drawable-xhdpi-screen.png" density="xhdpi"/>
+    <splash src="res/screen/android/drawable-xxhdpi-screen.png" density="xxhdpi"/>
+    <splash src="res/screen/android/drawable-xxxhdpi-screen.png" density="xxxhdpi"/>
     <icon src="res/icon/android/drawable-mdpi-icon.png" density="mdpi"/>
     <icon src="res/icon/android/drawable-hdpi-icon.png" density="hdpi"/>
     <icon src="res/icon/android/drawable-xhdpi-icon.png" density="xhdpi"/>
