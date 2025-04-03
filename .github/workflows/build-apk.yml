@@ -88,6 +88,7 @@ jobs:
           <preference name="AutoHideSplashScreen" value="true" />\n\
           <preference name="SplashScreenDelay" value="10" />\n\
           <preference name="FadeSplashScreen" value="false"/>\n\
+          <preference name="SplashScreen" value="res/screen/android/splash-screen.png"/> 
           <allow-navigation href="*" />' config.xml
 
 
