@@ -82,18 +82,17 @@ jobs:
         run: |
           cd MentorNook
           sed -i '/<platform name="android">/a \
-          <preference name="AndroidPersistentFileLocation" value="Internal"/>\n\
-          <preference name="AllowInlineMediaPlayback" value="true"/>\n\
-          <preference name="AndroidInsecureFileModeEnabled" value="true"/>\n\
-          <plugin name="cordova-plugin-dialogs" source="npm" />\n\
-          <preference name="AutoHideSplashScreen" value="true" />\n\   
-          <preference name="SplashScreenDelay" value="10" />\n\
-          <preference name="SplashScreen" value="res/screen/android/splashscreen.png"/>\n\ 
-          <preference name="FadeSplashScreenDuration" value="10"/>\n\ 
-          <preference name="ShowSplashScreen" value="false" />\n\   
-          <preference name="FadeSplashScreen" value="false"/>\n\     
+          <preference name="AndroidPersistentFileLocation" value="Internal"/> \
+          <preference name="AllowInlineMediaPlayback" value="true"/> \
+          <preference name="AndroidInsecureFileModeEnabled" value="true"/> \
+          <plugin name="cordova-plugin-dialogs" source="npm" /> \
+          <preference name="AutoHideSplashScreen" value="true" /> \
+          <preference name="SplashScreenDelay" value="10" /> \
+          <preference name="SplashScreen" value="res/screen/android/splashscreen.png"/> \
+          <preference name="FadeSplashScreenDuration" value="10"/> \
+          <preference name="ShowSplashScreen" value="false" /> \
+          <preference name="FadeSplashScreen" value="false"/> \
           <allow-navigation href="*" />' config.xml
-
 
       - name: Copy Updated Files to Cordova `www/`
         run: |
