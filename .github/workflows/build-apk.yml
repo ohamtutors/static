@@ -86,7 +86,8 @@ jobs:
           <preference name="AndroidInsecureFileModeEnabled" value="true"/>\n\
           <plugin name="cordova-plugin-dialogs" source="npm" />\n\
           <preference name="AutoHideSplashScreen" value="true" />\n\
-          <preference name="SplashScreenDelay" value="100" />\n\
+          <preference name="SplashScreenDelay" value="10" />\n\
+          <preference name="FadeSplashScreen" value="false"/>\n\
           <allow-navigation href="*" />' config.xml
 
 
