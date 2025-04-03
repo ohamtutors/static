@@ -9,11 +9,12 @@
     <allow-intent href="http://*/*" />
     <allow-intent href="https://*/*" />
    <platform name="android">
-    <preference name="AutoHideSplashScreen" value="true" />   
-    <preference name="SplashScreenDelay" value="10" />
-    <preference name="FadeSplashScreenDuration" value="10"/> 
-    <preference name="ShowSplashScreen" value="false" />   
-    <preference name="FadeSplashScreen" value="false"/>
+    <preference name="AutoHideSplashScreen" value="true" />
+    <preference name="FadeSplashScreen" value="true"/>
+    <preference name="ShowSplashScreen" value="true"/>
+    <preference name="ShowSplashScreenSpinner" value="false"/>  
+    <preference name="SplashScreenDelay" value="0" />
+    <preference name="FadeSplashScreenDuration" value="10"/>    
     <preference name="SplashScreen" value="res/screen/android/splashscreen.png" />   
     <preference name="AndroidWindowSplashScreenAnimatedIcon" value="res/screen/android/splashscreen.png" />   
     <splash src="res/screen/android/splash-port-hdpi.png" density="hdpi"/>
