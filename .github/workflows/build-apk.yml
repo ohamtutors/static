@@ -8,6 +8,7 @@ on:
       - "css/**"
       - "js/**"
       - "res/icon/android/**"
+      - "res/screen/android/**"
     branches:
       - main
 
