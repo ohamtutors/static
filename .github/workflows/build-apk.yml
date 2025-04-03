@@ -77,29 +77,29 @@ jobs:
           sed -i '/<uses-permission android:name="android.permission.INTERNET" \/>/a \
           <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" /> \
           <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />' AndroidManifest.xml
-
-      - name: Modify `config.xml` for WebView File Access
+      - name: Modify config.xml for WebView File Access
         run: |
           cd MentorNook
-          sed -i '/<platform name="android">/a \
-          <preference name="AndroidPersistentFileLocation" value="Internal"/> \
-          <preference name="AllowInlineMediaPlayback" value="true"/> \
-          <preference name="AndroidInsecureFileModeEnabled" value="true"/> \
-          <plugin name="cordova-plugin-dialogs" source="npm" /> \
-          <preference name="AutoHideSplashScreen" value="true" /> \
-          <preference name="ShowSplashScreen" value="false"/> \
-          <preference name="ShowSplashScreenSpinner" value="false"/> \  
-          <preference name="SplashScreenDelay" value="6000" /> \
-          <preference name="SplashScreenWidth" value="600" /> \
-          <preference name="SplashScreenHeight" value="300" /> \   
-          <preference name="SplashScreen" value="res/screen/android/splashscreen.png" /> \  
-          <preference name="AndroidWindowSplashScreenAnimatedIcon" value="res/screen/android/splashscreen.png" /> \  
-          <splash src="res/screen/android/splash-port-hdpi.png" density="port-hdpi"/> \
-          <splash src="res/screen/android/splash-port-mdpi.png" density="port-mdpi"/> \
-          <splash src="res/screen/android/splash-port-xhdpi.png" density="port-xhdpi"/> \
-          <splash src="res/screen/android/splash-port-xxhdpi.png" density="port-xxhdpi"/> \
-          <splash src="res/screen/android/splash-port-xxxhdpi.png" density="port-xxxhdpi"/> \
+          sed -i '/<platform name="android">/a\
+          <preference name="AndroidPersistentFileLocation" value="Internal"/>\
+          <preference name="AllowInlineMediaPlayback" value="true"/>\
+          <preference name="AndroidInsecureFileModeEnabled" value="true"/>\
+          <plugin name="cordova-plugin-dialogs" source="npm" />\
+          <preference name="AutoHideSplashScreen" value="true" />\
+          <preference name="ShowSplashScreen" value="false"/>\
+          <preference name="ShowSplashScreenSpinner" value="false"/>\
+          <preference name="SplashScreenDelay" value="6000" />\
+          <preference name="SplashScreenWidth" value="600" />\
+          <preference name="SplashScreenHeight" value="300" />\
+          <preference name="SplashScreen" value="res/screen/android/splashscreen.png" />\
+          <preference name="AndroidWindowSplashScreenAnimatedIcon" value="res/screen/android/splashscreen.png" />\
+          <splash src="res/screen/android/splash-port-hdpi.png" density="port-hdpi"/>\
+          <splash src="res/screen/android/splash-port-mdpi.png" density="port-mdpi"/>\
+          <splash src="res/screen/android/splash-port-xhdpi.png" density="port-xhdpi"/>\
+          <splash src="res/screen/android/splash-port-xxhdpi.png" density="port-xxhdpi"/>\
+          <splash src="res/screen/android/splash-port-xxxhdpi.png" density="port-xxxhdpi"/>\
           <allow-navigation href="*" />' config.xml
+
 
       - name: Copy Updated Files to Cordova `www/`
         run: |
