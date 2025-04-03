@@ -35,14 +35,4 @@ function onBackKeyDown() {
         );
 }
 
-function onDeviceReady() {
 
-      setTimeout(function () {
-        if (navigator.splashscreen) {
-            navigator.splashscreen.hide();
-            console.log('Splash screen hidden');
-        } else {
-            console.log('Splash screen plugin not found');
-        }
-    }, 100);
-}
