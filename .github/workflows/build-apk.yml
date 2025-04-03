@@ -91,7 +91,7 @@ jobs:
           <preference name="FadeSplashScreenDuration" value="10"/> \
           <preference name="ShowSplashScreen" value="false" /> \
           <preference name="FadeSplashScreen" value="false" /> \
-          <preference name="SplashScreen" value="/images/browser/splashscreen.png" /> \
+          <preference name="SplashScreen" value="res/screen/android/splashscreen.png" /> \
           <preference name="AndroidWindowSplashScreenAnimatedIcon" value="res/screen/android/splashscreen.png" /> \
           <allow-navigation href="*" />' config.xml
 
