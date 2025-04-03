@@ -68,6 +68,7 @@ jobs:
           cordova plugin add cordova-plugin-android-permissions
           cordova plugin add cordova-plugin-inappbrowser
           cordova plugin add cordova-plugin-dialogs
+          cordova plugin add cordova-plugin-splashscreen
 
       - name: Modify `AndroidManifest.xml` to Grant File Permissions
         run: |
