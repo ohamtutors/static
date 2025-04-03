@@ -11,7 +11,7 @@
    <platform name="android">
     <preference name="AutoHideSplashScreen" value="true" />   
     <preference name="SplashScreenDelay" value="10" />
-    <preference name="SplashScreen" value="res/android/splash-screen.png"/>   
+    <preference name="SplashScreen" value="res/screen/android/splash-screen.png"/>   
     <preference name="FadeSplashScreen" value="false"/>     
     <splash src="res/screens/android/drawable-hdpi-screen.png" density="hdpi"/>
     <splash src="res/screens/android/drawable-mdpi-screen.png" density="mdpi"/>
