@@ -88,7 +88,6 @@ jobs:
           <plugin name="cordova-plugin-dialogs" source="npm" /> \
           <preference name="AutoHideSplashScreen" value="true" /> \
           <preference name="SplashScreenDelay" value="10" /> \
-          <preference name="SplashScreen" value="res/screen/android/splashscreen.png"/> \
           <preference name="FadeSplashScreenDuration" value="10"/> \
           <preference name="ShowSplashScreen" value="false" /> \
           <preference name="FadeSplashScreen" value="false"/> \
