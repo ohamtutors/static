@@ -13,7 +13,8 @@
     <preference name="ShowSplashScreen" value="false"/>
     <preference name="ShowSplashScreenSpinner" value="false"/>  
     <preference name="SplashScreenDelay" value="6000" />   
-    <preference name="SplashScreen" value="res/screen/android/splashscreen.png" />   
+    <preference name="SplashScreen" value="res/screen/android/splashscreen.png" />
+    <preference name="AndroidWindowSplashScreenBackground" value="#000030" />   
     <preference name="AndroidWindowSplashScreenAnimatedIcon" value="res/screen/android/splashscreen.png" />   
     <splash src="res/screen/android/splash-port-hdpi.png" density="port-hdpi"/>
     <splash src="res/screen/android/splash-port-mdpi.png" density="port-mdpi"/>
