@@ -155,12 +155,13 @@ jobs:
           zipalign -v 4 \
           MentorNook/platforms/android/app/build/outputs/apk/release/app-release-unsigned.apk \
           MentorNook/platforms/android/app/build/outputs/apk/release/app-release-aligned.apk
-
+      
       - name: Sign APK File
         run: |
           apksigner sign --ks my-release-key.jks --ks-pass pass:mypassword --key-pass pass:mypassword \
           --out MentorNook/platforms/android/app/build/outputs/apk/release/app-release.apk \
-          MentorNook/platforms/android/app/build/outputs/apk/release/app-release-aligned.apk
+          MentorNook/platforms/android/app/build/outputs/apk/release/app-release-unsigned.apk
+
 
       - name: Verify APK Signature
         run: |
