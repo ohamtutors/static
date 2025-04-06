@@ -148,21 +148,21 @@ jobs:
           cordova build android --release -- --packageType=apk
           cordova build android --release -- --packageType=bundle
      
-      - name: Sign APK File
-        run: |
-          apksigner sign --ks my-release-key.jks --ks-pass pass:mypassword --key-pass pass:mypassword \
-          --out MentorNook/platforms/android/app/build/outputs/apk/release/app-release.apk \
-          MentorNook/platforms/android/app/build/outputs/apk/release/app-release-unsigned.apk
-      
       - name: Align APK for Installation
         run: |
           zipalign -v 4 \
-          MentorNook/platforms/android/app/build/outputs/apk/release/app-release.apk \
+          MentorNook/platforms/android/app/build/outputs/apk/release/app-release-unsigned.apk \
+          MentorNook/platforms/android/app/build/outputs/apk/release/app-release-aligned.apk
+      
+      - name: Sign APK with apksigner
+        run: |
+          apksigner sign --ks my-release-key.jks --ks-pass pass:mypassword --key-pass pass:mypassword \
+          --out MentorNook/platforms/android/app/build/outputs/apk/release/app-release.apk \
           MentorNook/platforms/android/app/build/outputs/apk/release/app-release-aligned.apk
       
       - name: Verify APK Signature
         run: |
-          apksigner verify --verbose --print-certs MentorNook/platforms/android/app/build/outputs/apk/release/app-release-aligned.apk
+          apksigner verify --verbose --print-certs MentorNook/platforms/android/app/build/outputs/apk/release/app-release.apk
 
 
       - name: Upload APK and AAB Artifacts
