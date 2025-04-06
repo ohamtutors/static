@@ -142,13 +142,6 @@ jobs:
             -dname "CN=MentorNook, OU=MyOrg, O=MyCompany, L=City, S=State, C=US"
           fi
 
-  
-      - name: Upgrade Android SDK & Gradle
-        run: |
-          sdkmanager --update
-          sdkmanager "platforms;android-36" "build-tools;34.0.0"  # Use latest SDK & Build Tools
-          yes | sdkmanager --licenses  # Accept licenses
-
       - name: Build APK and AAB
         run: |
           cd MentorNook
