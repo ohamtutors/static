@@ -155,7 +155,7 @@ jobs:
           zipalign -v 4 \
           MentorNook/platforms/android/app/build/outputs/apk/release/app-release-unsigned.apk \
           MentorNook/platforms/android/app/build/outputs/apk/release/app-release-aligned.apk
-      
+       
       - name: Sign APK File
         run: |
           apksigner sign --ks my-release-key.jks --ks-pass pass:mypassword --key-pass pass:mypassword \
@@ -163,10 +163,11 @@ jobs:
           MentorNook/platforms/android/app/build/outputs/apk/release/app-release-unsigned.apk
 
 
+
       - name: Verify APK Signature
         run: |
           apksigner verify --verbose --print-certs MentorNook/platforms/android/app/build/outputs/apk/release/app-release.apk
-
+      
 
       - name: Upload APK and AAB Artifacts
         uses: actions/upload-artifact@v4
