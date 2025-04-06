@@ -85,6 +85,8 @@ jobs:
           <preference name="AllowInlineMediaPlayback" value="true"/>\
           <preference name="AndroidInsecureFileModeEnabled" value="true"/>\
           <plugin name="cordova-plugin-dialogs" source="npm" />\
+          <preference name="android-minSdkVersion" value="21" />\
+          <preference name="android-targetSdkVersion" value="33" />\
           <preference name="AutoHideSplashScreen" value="true" />\
           <preference name="ShowSplashScreen" value="false"/>\
           <preference name="ShowSplashScreenSpinner" value="false"/>\
@@ -133,27 +135,36 @@ jobs:
               
       - name: Generate Keystore for Signing (if not exists)
         run: |
-          if [ ! -f my-release-key.jks ]; then
-            keytool -genkey -v -keystore my-release-key.jks -keyalg RSA -keysize 2048 -validity 10000 -alias my-key-alias -storepass mypassword -keypass mypassword -dname "CN=MentorNook, OU=MyOrg, O=MyCompany, L=City, S=State, C=US"
-          fi
+             if [ ! -f my-release-key.jks ]; then
+               keytool -genkey -v -keystore my-release-key.jks -deststoretype pkcs12 \
+               -keyalg RSA -keysize 2048 -validity 10000 \
+               -alias my-key-alias -storepass ${{ secrets.KEYSTORE_PASSWORD }} -keypass ${{ secrets.KEY_PASSWORD }} \
+               -dname "CN=MentorNook, OU=MyOrg, O=MyCompany, L=City, S=State, C=US"
+             fi
+  
 
       - name: Build APK and AAB
         run: |
           cd MentorNook
           cordova build android --release -- --packageType=apk
           cordova build android --release -- --packageType=bundle
-
-      - name: Sign APK File
-        run: |
-          jarsigner -verbose -sigalg SHA256withRSA -digestalg SHA-256 \
-          -keystore my-release-key.jks -storepass mypassword -keypass mypassword \
-          MentorNook/platforms/android/app/build/outputs/apk/release/app-release-unsigned.apk my-key-alias
-
+     
       - name: Align APK for Installation
         run: |
           zipalign -v 4 \
           MentorNook/platforms/android/app/build/outputs/apk/release/app-release-unsigned.apk \
-          MentorNook/platforms/android/app/build/outputs/apk/release/app-release.apk
+          MentorNook/platforms/android/app/build/outputs/apk/release/app-release-aligned.apk
+
+      - name: Sign APK File
+        run: |
+          apksigner sign --ks my-release-key.jks --ks-pass pass:mypassword --key-pass pass:mypassword \
+          --out MentorNook/platforms/android/app/build/outputs/apk/release/app-release.apk \
+          MentorNook/platforms/android/app/build/outputs/apk/release/app-release-aligned.apk
+
+      - name: Verify APK Signature
+        run: |
+          apksigner verify --verbose --print-certs MentorNook/platforms/android/app/build/outputs/apk/release/app-release.apk
+
 
       - name: Upload APK and AAB Artifacts
         uses: actions/upload-artifact@v4
